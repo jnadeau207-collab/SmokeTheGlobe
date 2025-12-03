@@ -1,96 +1,113 @@
 # fix-smoketheglobe.ps1
-# Run this from the SmokeTheGlobe project root.
+$ErrorActionPreference = "Stop"
 
-Write-Host "=== SmokeTheGlobe Fix Script ===" -ForegroundColor Cyan
+Write-Host "==== SmokeTheGlobe one-shot fix ====" -ForegroundColor Cyan
 
-# Move to script directory (project root)
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-if ($scriptDir -and (Test-Path $scriptDir)) {
-    Set-Location $scriptDir
-}
-
-# 1) Strip BOM from prisma/schema.prisma (this is causing P1012)
-$schemaPath = "prisma\schema.prisma"
-if (Test-Path $schemaPath) {
-    Write-Host "Checking for BOM in $schemaPath ..."
-    $bytes = [System.IO.File]::ReadAllBytes($schemaPath)
-    if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
-        Write-Host "BOM detected. Stripping it..."
-        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-        $text = $utf8NoBom.GetString($bytes, 3, $bytes.Length - 3)
-        [System.IO.File]::WriteAllText($schemaPath, $text, $utf8NoBom)
-        Write-Host "BOM removed from schema.prisma."
-    } else {
-        Write-Host "No BOM found in schema.prisma."
-    }
-} else {
-    Write-Host "WARNING: prisma/schema.prisma not found." -ForegroundColor Yellow
-}
-
-# 2) Overwrite prisma/prisma.config.ts with a sane Prisma 7 config (with seed)
-Write-Host "Rewriting prisma/prisma.config.ts ..."
-$prismaConfigPath = "prisma\prisma.config.ts"
-$prismaConfigContent = @"
-import 'dotenv/config';
-import { defineConfig, env } from 'prisma/config';
-
-export default defineConfig({
-  schema: 'prisma/schema.prisma',
-  migrations: {
-    path: 'prisma/migrations',
-    seed: 'ts-node prisma/seed.ts',
-  },
-  datasource: {
-    url: env('DATABASE_URL'),
-  },
-});
-"@
-$prismaConfigContent | Set-Content -Path $prismaConfigPath -Encoding utf8
-Write-Host "prisma.config.ts written."
-
-# 3) Ensure Tailwind/PostCSS/Autoprefixer are installed
-Write-Host "Checking for tailwindcss in package.json ..."
-if (Test-Path "package.json") {
-    $pkgRaw = Get-Content "package.json" -Raw
-    if ($pkgRaw -notmatch '"tailwindcss"') {
-        Write-Host "tailwindcss not found in package.json. Installing dev dependencies..."
-        npm install -D tailwindcss postcss autoprefixer
-        if ($LASTEXITCODE -ne 0) {
-            Write-Host "ERROR: npm install for Tailwind/PostCSS failed." -ForegroundColor Red
-            exit 1
-        }
-        Write-Host "Tailwind/PostCSS/Autoprefixer installed."
-    } else {
-        Write-Host "tailwindcss already present in package.json. Skipping install."
-    }
-} else {
-    Write-Host "ERROR: package.json not found. Are you in the project root?" -ForegroundColor Red
+# Ensure we're in the project root (where package.json lives)
+if (-not (Test-Path "package.json")) {
+    Write-Host "ERROR: package.json not found. Run this script from the SmokeTheGlobe folder." -ForegroundColor Red
     exit 1
 }
 
-# 4) Run Prisma + Dev server
+# UTF-8 without BOM encoding helper
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
-Write-Host "`nRunning: npx prisma generate ..." -ForegroundColor Cyan
+function Write-FileUtf8NoBom {
+    param(
+        [string]$Path,
+        [string]$Content
+    )
+
+    $fullPath = (Resolve-Path -LiteralPath $Path).Path
+    [System.IO.File]::WriteAllText($fullPath, $Content, $utf8NoBom)
+}
+
+function Fix-FileEncoding {
+    param(
+        [string]$Path
+    )
+
+    if (Test-Path -LiteralPath $Path) {
+        Write-Host "Fixing text file: $Path"
+        $content = Get-Content -LiteralPath $Path -Raw
+
+        # Strip any U+FEFF BOM characters in the text itself
+        $bomChar = [char]0xFEFF
+        $content = $content -replace [string]$bomChar, ""
+
+        # Rewrite as UTF-8 without BOM
+        Write-FileUtf8NoBom -Path $Path -Content $content
+    }
+    else {
+        Write-Host "Skipping missing file: $Path" -ForegroundColor DarkGray
+    }
+}
+
+Write-Host ""
+Write-Host "==== Ensuring Postgres (db) container is running ====" -ForegroundColor Cyan
+try {
+    docker compose up -d db | Out-Host
+}
+catch {
+    Write-Host "docker compose failed, trying docker-compose ..." -ForegroundColor Yellow
+    docker-compose up -d db | Out-Host
+}
+
+Write-Host ""
+Write-Host "==== Updating package.json Prisma versions (7.0.1) ====" -ForegroundColor Cyan
+$pkgPath = "package.json"
+$pkgJson = Get-Content -LiteralPath $pkgPath -Raw | ConvertFrom-Json
+
+if (-not $pkgJson.dependencies) {
+    $pkgJson | Add-Member -MemberType NoteProperty -Name dependencies -Value @{}
+}
+if (-not $pkgJson.devDependencies) {
+    $pkgJson | Add-Member -MemberType NoteProperty -Name devDependencies -Value @{}
+}
+
+$pkgJson.dependencies."@prisma/client" = "7.0.1"
+$pkgJson.devDependencies."prisma" = "7.0.1"
+
+$newPkgJson = $pkgJson | ConvertTo-Json -Depth 10
+Write-FileUtf8NoBom -Path $pkgPath -Content $newPkgJson
+
+Write-Host ""
+Write-Host "==== Fixing key text files (UTF-8 no BOM) ====" -ForegroundColor Cyan
+
+$filesToFix = @(
+    ".env",
+    ".env.local",
+    ".env.example",
+    "prisma\schema.prisma",
+    "prisma.config.ts",
+    "prisma\prisma.config.ts",
+    "prisma\seed.ts"
+)
+
+foreach ($f in $filesToFix) {
+    Fix-FileEncoding -Path $f
+}
+
+Write-Host ""
+Write-Host "==== Cleaning old Next.js build (.next) ====" -ForegroundColor Cyan
+if (Test-Path ".next") {
+    Remove-Item -Recurse -Force ".next"
+    Write-Host "Removed .next folder."
+}
+else {
+    Write-Host ".next folder not found, nothing to clean."
+}
+
+Write-Host ""
+Write-Host "==== Reinstalling Prisma packages (7.0.1) ====" -ForegroundColor Cyan
+npm uninstall prisma @prisma/client | Out-Host
+npm install -D prisma@7.0.1 | Out-Host
+npm install @prisma/client@7.0.1 | Out-Host
+
+Write-Host ""
+Write-Host "==== Prisma generate and migrate deploy ====" -ForegroundColor Cyan
 npx prisma generate
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "ERROR: prisma generate failed. Check schema.prisma and prisma.config.ts." -ForegroundColor Red
-    exit 1
-}
+npx prisma migrate deploy
 
-Write-Host "`nRunning: npx prisma migrate reset --force (this will wipe and recreate the dev DB) ..." -ForegroundColor Cyan
-npx prisma migrate reset --force
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "ERROR: prisma migrate reset failed. Is Postgres running and DATABASE_URL correct?" -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "`nRunning: npx prisma db seed ..." -ForegroundColor Cyan
-npx prisma db seed
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "WARNING: prisma db seed failed. Seed may not be configured or may have errors." -ForegroundColor Yellow
-} else {
-    Write-Host "Seed completed."
-}
-
-Write-Host "`nStarting dev server: npm run dev" -ForegroundColor Cyan
-npm run dev
+Write-Host ""
+Write-Host "==== All done. Next step: run 'npm run dev' from this folder. ====" -ForegroundColor Green
