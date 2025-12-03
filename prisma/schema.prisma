@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Enums ----------
+
+enum LocationType {
+  DISPENSARY
+  CULTIVATION
+  MANUFACTURING
+  LAB_FACILITY
+  OTHER
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  VERIFIED
+  FLAGGED
+  REJECTED
+}
+
+enum RecallStatus {
+  ACTIVE
+  RESOLVED
+  UNKNOWN
+}
+
+// ---------- Core Auth / Admin ----------
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- Brands & Locations (minimal, contextual) ----------
+
+model Brand {
+  id          Int     @id @default(autoincrement())
+  name        String
+  slug        String  @unique
+  website     String?
+  description String?
+  logoUrl     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batches   Batch[]
+  locations Location[]
+}
+
+model Location {
+  id   Int          @id @default(autoincrement())
+  name String
+  slug String       @unique
+  type LocationType @default(DISPENSARY)
+
+  // Optional link to a brand/chain
+  brand   Brand? @relation(fields: [brandId], references: [id])
+  brandId Int?
+
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String? @default("US")
+
+  latitude  Float?
+  longitude Float?
+
+  // Optional linkage to regulatory license
+  stateLicense   StateLicense? @relation(fields: [stateLicenseId], references: [id])
+  stateLicenseId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Batches sold / associated with this location
+  batchLinks BatchLocation[]
+}
+
+// Junction table: many-to-many between Batch and Location
+model BatchLocation {
+  id         Int      @id @default(autoincrement())
+  batch      Batch    @relation(fields: [batchId], references: [id])
+  batchId    Int
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId Int
+
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+
+  @@unique([batchId, locationId])
+}
+
+// ---------- Regulatory / Licensing ----------
+
+model StateLicense {
+  id            Int    @id @default(autoincrement())
+  stateCode     String // e.g. "CO", "CA"
+  licenseNumber String
+  licenseType   String // retailer, cultivator, lab, etc.
+  status        String // active, suspended, revoked, etc.
+  entityName    String
+
+  issuedAt  DateTime?
+  expiresAt DateTime?
+
+  // raw source / metadata
+  sourceUrl    String?
+  sourceSystem String? // e.g. "CO_MED", "MA_CCC"
+  rawData      Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  locations Location[]
+  labs      Lab[]
+}
+
+// ---------- Labs & Lab Results ----------
+
+model Lab {
+  id      Int     @id @default(autoincrement())
+  name    String
+  slug    String  @unique
+  website String?
+
+  // Normalized location for state map / summaries
+  city      String?
+  stateCode String? // e.g. "ME", "CO"
+
+  // Link to state lab license if available
+  stateLicense   StateLicense? @relation(fields: [stateLicenseId], references: [id])
+  stateLicenseId Int?
+
+  accreditation    String? // e.g. ISO/IEC 17025
+  reliabilityScore Float? // CartFax internal lab reliability metric 0-1
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  labResults LabResult[]
+}
+
+// ---------- Batches & Verification ----------
+
+model Batch {
+  id Int @id @default(autoincrement())
+
+  // Core batch identity
+  batchCode    String // from COA or internal batch ID
+  jurisdiction String? // 2-letter state where batch is regulated (for map/drilldown)
+
+  productName     String?
+  productSku      String? // optional internal SKU
+  primaryCategory String? // flower, vape, edible, etc.
+  subCategory     String? // live resin, distillate, chocolate, etc.
+
+  // Brand link
+  brand   Brand? @relation(fields: [brandId], references: [id])
+  brandId Int?
+
+  // Legacy / secondary state field (some older code might still use this)
+  stateCode String? // e.g. "ME", "CA", "CO"
+
+  // Date fields
+  harvestDate    DateTime?
+  productionDate DateTime?
+  packageDate    DateTime?
+  expirationDate DateTime?
+
+  // Status / metadata
+  isActive Boolean @default(true)
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  labResults    LabResult[]
+  locations     BatchLocation[]
+  verifications VerificationEvent[]
+  recalls       Recall[]
+
+  // Aggregated rating (5-star) for this batch
+  reviewAggregate BatchReviewAggregate?
+  ratingSources   BatchRatingSource[]
+}
+
+model LabResult {
+  id      Int   @id @default(autoincrement())
+  batch   Batch @relation(fields: [batchId], references: [id])
+  batchId Int
+
+  lab   Lab? @relation(fields: [labId], references: [id])
+  labId Int?
+
+  // Identifiers on the COA
+  coaIdentifier String? // COA doc ID / sample ID
+  sampleId      String?
+  sampleType    String? // flower, concentrate, edible, etc.
+
+  testedAt   DateTime?
+  reportedAt DateTime?
+
+  // Potency (normalized)
+  thcPercent               Float?
+  thcaPercent              Float?
+  cbdPercent               Float?
+  cbdaPercent              Float?
+  totalCannabinoidsPercent Float?
+
+  // Terpenes (total)
+  totalTerpenesPercent Float?
+
+  // Safety / contamination (simple flags; details in Json)
+  passed          Boolean? // overall pass/fail
+  pesticidesPass  Boolean?
+  solventsPass    Boolean?
+  heavyMetalsPass Boolean?
+  microbialsPass  Boolean?
+
+  moisturePercent Float?
+  waterActivity   Float?
+
+  // Detailed raw breakdown, as parsed from PDF
+  analyteSummary Json? // unified table of analytes & results
+  rawJson        Json? // original extracted JSON
+  sourcePdfUrl   String? // if from remote
+
+  // 1:1 relation to UploadedDocument (FK lives here)
+  uploadedDocument   UploadedDocument? @relation(fields: [uploadedDocumentId], references: [id])
+  uploadedDocumentId Int?              @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  verifications VerificationEvent[]
+}
+
+// ---------- Uploaded Documents (COAs, etc.) ----------
+
+model UploadedDocument {
+  id            Int      @id @default(autoincrement())
+  filePath      String
+  fileName      String
+  mimeType      String
+  size          Int
+  sha256        String   @unique
+  extractedText String?
+  labName       String?
+  batchCode     String? // batch link candidate, not guaranteed
+  uploader      String? // admin email / id
+  createdAt     DateTime @default(now())
+  verified      Boolean  @default(false)
+
+  // Simple back-reference from LabResult
+  labResult LabResult?
+}
+
+// ---------- Verification / Events ----------
+
+model VerificationEvent {
+  id      Int   @id @default(autoincrement())
+  batch   Batch @relation(fields: [batchId], references: [id])
+  batchId Int
+
+  labResult   LabResult? @relation(fields: [labResultId], references: [id])
+  labResultId Int?
+
+  status    VerificationStatus @default(UNVERIFIED)
+  reason    String? // why flagged/rejected/etc.
+  createdAt DateTime           @default(now())
+  createdBy String? // admin email/id
+
+  metadata Json?
+}
+
+// ---------- Recalls ----------
+
+model Recall {
+  id      Int    @id @default(autoincrement())
+  batch   Batch? @relation(fields: [batchId], references: [id])
+  batchId Int?
+
+  jurisdiction String // e.g. "CO", "CA", "US-FED"
+  recallNumber String?
+  recallType   String? // voluntary, mandatory, etc.
+  reason       String?
+  status       RecallStatus @default(ACTIVE)
+
+  issuedAt   DateTime?
+  resolvedAt DateTime?
+
+  sourceUrl String?
+  rawData   Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------- Ratings: 5-Star Aggregate across Sources ----------
+
+// One aggregate row per batch: simple 5-star score
+model BatchReviewAggregate {
+  id      Int   @id @default(autoincrement())
+  batch   Batch @relation(fields: [batchId], references: [id])
+  batchId Int   @unique
+
+  ratingAvg   Float @default(0) // 0.0 - 5.0
+  ratingCount Int   @default(0) // total number of ratings across sources
+
+  lastUpdated DateTime @updatedAt
+}
+
+// Source-level ratings (e.g. Leafly, Google, internal, etc.)
+model BatchRatingSource {
+  id      Int   @id @default(autoincrement())
+  batch   Batch @relation(fields: [batchId], references: [id])
+  batchId Int
+
+  source      String // e.g. "leafly", "google", "internal"
+  ratingAvg   Float // 0.0 - 5.0
+  ratingCount Int    @default(0)
+
+  lastSynced DateTime @default(now())
+
+  @@unique([batchId, source])
+}
