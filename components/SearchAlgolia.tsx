@@ -25,7 +25,7 @@ export default function SearchAlgolia() {
   }
 
   return (
-    <div className="bg-emerald-900/90 p-4 rounded shadow">
+    <div className="bg-emerald-400 p-3 rounded shadow">
       <form onSubmit={handleSearch} className="flex gap-2 mb-4">
         <input
           value={query}

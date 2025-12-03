@@ -28,7 +28,7 @@ export default function MapWithSearch() {
   }
 
   return (
-    <div className="bg-emerald-900/90 p-4 rounded shadow">
+    <div className="bg-emerald-400 p-3 rounded shadow">
       <button
         className="mb-3 px-3 py-1 bg-sky-500 text-white rounded"
         onClick={useMyLocation}

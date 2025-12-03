@@ -1,4 +1,5 @@
-﻿import { PrismaClient } from '@prisma/client';`r`nimport { PrismaPg } from '@prisma/adapter-pg';
+﻿import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import slugify from 'slugify';
 
 /**
@@ -174,4 +175,5 @@ export async function upsertLicenseRecord(data: LicenseInput): Promise<void> {
     // Swallow the exception to continue processing other records.
   }
 }
+
 
