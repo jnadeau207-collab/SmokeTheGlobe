@@ -1,4 +1,5 @@
-﻿import { PrismaClient } from '@prisma/client';`r`nimport { PrismaPg } from '@prisma/adapter-pg';
+﻿import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { indexDispensary } from '../../../lib/algolia';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
@@ -15,4 +16,5 @@ export default async function handler(req: any, res: any) {
 
   res.json({ ok: true, count: dispensaries.length });
 }
+
 
