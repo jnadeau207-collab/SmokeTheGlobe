@@ -600,7 +600,7 @@ function MapWithSearch() {
         lng: -98.35
     });
     const { isLoaded } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$react$2d$google$2d$maps$2f$api$2f$dist$2f$esm$2e$js__$5b$client$5d$__$28$ecmascript$29$__["useJsApiLoader"])({
-        googleMapsApiKey: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$client$5d$__$28$ecmascript$29$__["default"].env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+        googleMapsApiKey: ("TURBOPACK compile-time value", "dev-placeholder") || '',
         libraries: [
             'places'
         ]
