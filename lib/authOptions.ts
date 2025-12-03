@@ -15,7 +15,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // DEBUG: Log incoming request shape (do NOT log raw password in prod)
         console.log("[AUTH] authorize called", {
           email: credentials?.email,
           passwordLength: credentials?.password?.length ?? 0,
@@ -27,12 +26,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Missing email or password");
         }
 
-        // Use AdminUser model
+        // Look up AdminUser (matches prisma schema)
         const user = await prisma.adminUser.findUnique({
           where: { email: credentials.email },
         });
 
-        // DEBUG: Show whether we found a user and the length of stored password (hash)
         console.log("[AUTH] prisma returned user:", user ? { id: user.id, email: user.email, storedPassLen: user.password?.length } : null);
 
         if (!user || !user.password) {
@@ -41,8 +39,6 @@ export const authOptions: NextAuthOptions = {
         }
 
         const isValid = await bcrypt.compare(credentials.password, user.password);
-
-        // DEBUG: Log bcrypt result
         console.log("[AUTH] bcrypt.compare result:", { isValid });
 
         if (!isValid) {
@@ -50,7 +46,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid email or password");
         }
 
-        // Success
+        // Minimal info stored in session/jwt
         return {
           id: user.id,
           email: user.email,
