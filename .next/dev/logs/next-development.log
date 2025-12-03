@@ -1,105 +1,109 @@
-[00:00:00.691] Server  LOG      ✓ Ready in 465ms
-[00:00:06.984] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.985] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.988] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.989] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.990] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.992] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.994] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.994] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.995] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.997] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:06.999] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.003] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:07.006] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
-[00:00:07.006] Browser WARN    As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
-[00:00:07.152] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.153] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.154] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.155] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.156] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.157] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.158] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.160] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.161] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.162] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.163] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:07.165] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:07.245] Browser ERROR   Google Maps JavaScript API error: InvalidKeyMapError
+[00:00:00.657] Server  LOG      ✓ Ready in 441ms
+[00:00:11.048] Server  ERROR    ⨯ ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+
+
+[00:00:11.239] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
+[00:00:11.239] Browser WARN    As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
+[00:00:11.239] Browser ERROR   ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+[00:00:11.247] Server  ERROR    ⨯ ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+
+
+[00:00:11.395] Browser ERROR   Google Maps JavaScript API error: InvalidKeyMapError
 https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key-map-error
-[00:00:07.245] Browser ERROR   [next-auth][error][CLIENT_FETCH_ERROR] 
+[00:00:11.395] Browser ERROR   ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+[00:00:11.395] Browser ERROR   ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+[00:00:11.395] Browser ERROR   [next-auth][error][CLIENT_FETCH_ERROR] 
 https://next-auth.js.org/errors#client_fetch_error Unexpected token '<', "<!DOCTYPE "... is not valid JSON {"error":{"message":"Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON","name":"SyntaxError","stack":"SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"},"message":"Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON","url":"/api/auth/session"}
-[00:00:09.955] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.956] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.957] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.957] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.957] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.958] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.958] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.959] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.959] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.960] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.960] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.962] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:09.968] Browser ERROR   [next-auth][error][CLIENT_FETCH_ERROR] 
-https://next-auth.js.org/errors#client_fetch_error Unexpected token '<', "<!DOCTYPE "... is not valid JSON {"error":{"message":"Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON","name":"SyntaxError","stack":"SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"},"message":"Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON","url":"/api/auth/providers"}
-[00:00:09.973] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.973] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.974] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.974] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.975] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.975] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.976] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.976] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.977] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.977] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.978] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.979] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:09.986] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.987] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.989] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.989] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.990] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.990] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.990] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.991] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.991] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.992] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.992] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:09.994] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:10.045] Browser ERROR   uncaughtError: Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:13.108] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.108] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.109] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.109] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.110] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.110] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.111] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.111] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.112] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.112] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.113] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.115] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:13.124] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[turbopack]_runtime.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.126] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\[root-of-the-server]__55f03ce8._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.126] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\.next\dev\server\chunks\node_modules_next_dist_9b400ae3._.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.127] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\require-hook.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.128] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\module-loader\node-module-loader.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.130] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.131] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.131] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.132] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.132] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.133] Server  ERROR   C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
-[00:00:13.135] Server  ERROR    ⨯ Error: Failed to load external module @prisma/client: Error: Cannot find module 'C:\dev\fuckitweball-main\SmokeTheGlobe\node_modules\@prisma\client\runtime\library.js'
-[00:00:13.235] Browser ERROR   [next-auth][error][CLIENT_FETCH_ERROR] 
-https://next-auth.js.org/errors#client_fetch_error Unexpected token '<', "<!DOCTYPE "... is not valid JSON {"error":{"message":"Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON","name":"SyntaxError","stack":"SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON"},"message":"Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON","url":"/api/auth/session"}
-[00:00:14.397] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
-[00:00:14.397] Browser WARN    As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide.
-[00:00:14.397] Browser ERROR   Google Maps JavaScript API error: InvalidKeyMapError
-https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key-map-error
-[00:00:19.315] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
-[00:00:22.234] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
-[00:00:23.509] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
-[00:00:23.809] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
-[00:00:25.204] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
+[00:00:11.395] Browser ERROR   ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+[00:00:12.642] Browser ERROR   ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+[00:00:12.642] Browser ERROR   ./lib/authOptions.ts:1:8
+Parsing ecmascript source code failed
+> 1 | ﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
+    |        ^^^
+  2 |
+
+Expected '>', got 'THE'
+
+Import trace:
+  Route:
+    ./lib/authOptions.ts
+    ./pages/api/auth/[...nextauth].ts
+[00:00:16.132] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
+[00:00:25.166] Browser WARN    Performance warning! LoadScript has been reloaded unintentionally! You should not pass `libraries` prop as new array. Please keep an array of libraries as static class property for Components and PureComponents, or just a const variable outside of component, or somewhere in config files or ENV variables
