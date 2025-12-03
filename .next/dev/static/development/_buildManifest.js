@@ -2,9 +2,6 @@ self.__BUILD_MANIFEST = {
   "/": [
     "static/chunks/pages/index.js"
   ],
-  "/_error": [
-    "static/chunks/pages/_error.js"
-  ],
   "/admin": [
     "static/chunks/pages/admin.js"
   ],
@@ -46,6 +43,7 @@ self.__BUILD_MANIFEST = {
     "/api/admin/uploads/[id]",
     "/api/algolia/reindex",
     "/api/auth/[...nextauth]",
-    "/api/uploads-presign"
+    "/api/uploads-presign",
+    "/auth/signin"
   ]
 };self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()

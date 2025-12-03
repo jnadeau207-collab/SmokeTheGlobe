@@ -13,43 +13,47 @@ export default function SignIn({ csrfToken, callbackUrl }: Props) {
         <title>Sign in — SmokeTheGlobe</title>
       </Head>
 
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="max-w-md w-full rounded-lg border shadow-sm p-8 bg-gray-50">
-          <h1 className="text-xl font-semibold mb-3">Sign in</h1>
-          <p className="text-sm text-gray-600 mb-6">
+      {/* Fixed full-screen wrapper ensures this card is above layout elements */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
+        <div
+          className="max-w-md w-full rounded-xl border border-slate-800 bg-slate-900/90 p-6 pointer-events-auto"
+          style={{ backdropFilter: "blur(6px)" }}
+        >
+          <h1 className="text-xl font-semibold mb-2 text-slate-50">CartFax Admin</h1>
+          <p className="text-sm text-slate-400 mb-4">
             Sign in with your admin credentials to manage batches, lab results, and verification data.
           </p>
 
-          <form method="post" action="/api/auth/callback/credentials" className="space-y-4">
+          <form method="post" action="/api/auth/callback/credentials" className="space-y-4" aria-label="admin-signin-form">
             <input name="csrfToken" type="hidden" defaultValue={csrfToken ?? ""} />
-            {callbackUrl ? (
-              <input name="callbackUrl" type="hidden" defaultValue={callbackUrl} />
-            ) : null}
+            {callbackUrl ? <input name="callbackUrl" type="hidden" defaultValue={callbackUrl} /> : null}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-slate-300">Email</label>
               <input
                 name="email"
                 type="text"
                 required
-                className="mt-1 w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                autoComplete="email"
+                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-800/60 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 pointer-events-auto"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <label className="block text-sm font-medium text-slate-300">Password</label>
               <input
                 name="password"
                 type="password"
                 required
-                className="mt-1 w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                autoComplete="current-password"
+                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-800/60 px-3 py-2 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 pointer-events-auto"
               />
             </div>
 
             <div>
               <button
                 type="submit"
-                className="inline-flex items-center justify-center rounded-md bg-emerald-600 text-white px-4 py-2 text-sm font-medium hover:bg-emerald-700"
+                className="inline-flex items-center justify-center rounded-md bg-emerald-500 text-slate-950 px-4 py-2 text-sm font-medium hover:bg-emerald-400"
               >
                 Sign in
               </button>
@@ -61,11 +65,9 @@ export default function SignIn({ csrfToken, callbackUrl }: Props) {
   );
 }
 
-// Pull csrfToken server-side and forward callbackUrl query param so sign-in returns to where it started
 export async function getServerSideProps(context: any) {
   const csrfToken = await getCsrfToken(context);
   const callbackUrl = (context.query?.callbackUrl as string) || "/";
-
   return {
     props: { csrfToken: csrfToken ?? null, callbackUrl },
   };

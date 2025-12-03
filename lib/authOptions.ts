@@ -1,4 +1,5 @@
-﻿import type { NextAuthOptions } from 'next-auth';
+// lib/authOptions.ts
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { prisma } from './prisma';
 import bcrypt from 'bcrypt';
@@ -19,19 +20,16 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Missing email or password');
         }
 
-        const user = await prisma.user.findUnique({
+        // Use AdminUser model (matches prisma/schema.prisma)
+        const user = await prisma.adminUser.findUnique({
           where: { email: credentials.email },
         });
 
-        if (!user || !user.passwordHash) {
+        if (!user || !user.password) {
           throw new Error('Invalid email or password');
         }
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash
-        );
-
+        const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) {
           throw new Error('Invalid email or password');
         }
@@ -40,7 +38,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name ?? '',
-          role: user.role ?? 'user',
+          role: user.role ?? 'admin',
         };
       },
     }),
@@ -52,14 +50,14 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         (token as any).id = (user as any).id;
-        (token as any).role = (user as any).role ?? 'user';
+        (token as any).role = (user as any).role ?? 'admin';
       }
       return token;
     },
     async session({ session, token }) {
       if (token && session.user) {
         (session.user as any).id = (token as any).id;
-        (session.user as any).role = (token as any).role ?? 'user';
+        (session.user as any).role = (token as any).role ?? 'admin';
       }
       return session;
     },
