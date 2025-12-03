@@ -2,7 +2,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]';
-import { PrismaClient } from '@prisma/client';`r`nimport { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import multer from 'multer';
 import pdfParse from 'pdf-parse';
 import fs from 'fs/promises';
@@ -349,4 +350,5 @@ export default async function handler(
   res.setHeader('Allow', ['GET', 'POST']);
   return res.status(405).end();
 }
+
 

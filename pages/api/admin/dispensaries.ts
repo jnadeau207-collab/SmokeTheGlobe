@@ -1,4 +1,5 @@
-﻿import { PrismaClient } from '@prisma/client';`r`nimport { PrismaPg } from '@prisma/adapter-pg';
+﻿import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]';
 
@@ -68,4 +69,5 @@ export default async function handler(req: any, res: any) {
 
   res.status(405).end();
 }
+
 
