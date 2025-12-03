@@ -1,0 +1,1 @@
+﻿<PASTE THE lib/authOptions.ts CONTENT FROM ABOVE HERE>
