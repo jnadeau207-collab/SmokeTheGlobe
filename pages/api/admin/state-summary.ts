@@ -1,7 +1,7 @@
 ﻿// pages/api/admin/state-summary.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]';
+import { authOptions } from '../../../lib/authOptions';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
@@ -105,5 +105,6 @@ export default async function handler(
       .json({ error: e?.message || 'Failed to build state summary' });
   }
 }
+
 
 
