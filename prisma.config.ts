@@ -1,14 +1,15 @@
-import { defineConfig } from '@prisma/config';
+import 'dotenv/config';
+import { defineConfig } from 'prisma/config';
 
 export default defineConfig({
-  // Where the actual Prisma schema lives
   schema: 'prisma/schema.prisma',
-
-  // Prisma 7: move the connection string here instead of schema.prisma
-  datasources: {
-    db: {
-      provider: 'postgresql',
-      url: { env: 'DATABASE_URL' },
-    },
+  migrations: {
+    path: 'prisma/migrations',
+    // uncomment this after seed is fully working:
+    // seed: 'ts-node prisma/seed.ts',
+  },
+  datasource: {
+    url: process.env.DATABASE_URL!,
   },
 });
+
