@@ -1,73 +1,59 @@
 // src/app/galaxy/page.tsx
-import { Suspense } from "react";
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import { prisma } from "@/lib/prisma";
 
+// Always treat this route as dynamic so it sees fresh data
 export const dynamic = "force-dynamic";
 
-export type GalaxyLicense = {
-  id: string;
-  entityName: string | null;
-  stateCode: string | null;
-  transparencyScore: number | null;
-};
-
-const GalaxyScene = dynamic(
+const GalaxyScene = dynamicImport(
   () => import("@/components/galaxy/GalaxyScene"),
   {
     ssr: false,
+    loading: () => (
+      <div className="flex h-[calc(100vh-80px)] items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-black">
+        <p className="text-sm text-slate-400">
+          Loading cannabis transparency galaxy…
+        </p>
+      </div>
+    ),
   }
 );
 
-async function getLicenses(): Promise<GalaxyLicense[]> {
-  const rows = await prisma.stateLicense.findMany({
+export default async function GalaxyPage() {
+  const licenses = await prisma.stateLicense.findMany({
     select: {
       id: true,
       entityName: true,
       stateCode: true,
-      transparencyScore: true
+      transparencyScore: true,
     },
-    take: 5000 // cap for performance; adjust as needed
   });
 
-  return rows.map((row) => ({
-    id: String(row.id),
-    entityName: row.entityName,
-    stateCode: row.stateCode,
-    transparencyScore: row.transparencyScore
+  const normalized = licenses.map((l) => ({
+    id: String(l.id),
+    entityName: l.entityName ?? "",
+    stateCode: l.stateCode ?? "",
+    transparencyScore: l.transparencyScore ?? 0,
   }));
-}
-
-export default async function GalaxyPage() {
-  const licenses = await getLicenses();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 text-slate-50">
-      {/* Glow backdrop */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_55%)]" />
+    <div className="relative h-[calc(100vh-80px)] w-full overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-black">
+      {/* Glow background */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.18),_transparent_55%)]" />
 
-      <header className="relative z-10 flex items-center justify-between px-6 py-4">
-        <div>
-          <div className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-emerald-400">
-            Compliance Galaxy
-          </div>
-          <p className="mt-1 text-xs text-slate-400">
-            Internal 3D view of licenses and transparency scores. For admin use only.
-          </p>
+      <GalaxyScene licenses={normalized} />
+
+      {/* Top gradient & HUD card */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
+      <div className="pointer-events-none absolute bottom-6 left-1/2 w-full max-w-3xl -translate-x-1/2 px-4">
+        <div className="mx-auto rounded-3xl border border-emerald-400/20 bg-slate-950/60 px-4 py-3 text-center text-xs text-slate-300 backdrop-blur-xl shadow-[0_0_40px_rgba(16,185,129,0.35)]">
+          <span className="font-semibold text-emerald-300">
+            Cannabis Transparency Galaxy
+          </span>{" "}
+          · Each point is a license. Radius, color and glow encode regulatory
+          transparency.
         </div>
-      </header>
-
-      <main className="relative z-0 h-[calc(100vh-4rem)]">
-        <Suspense
-          fallback={
-            <div className="flex h-full items-center justify-center text-sm text-slate-400">
-              Initializing galaxy…
-            </div>
-          }
-        >
-          <GalaxyScene licenses={licenses} />
-        </Suspense>
-      </main>
+      </div>
     </div>
   );
 }
