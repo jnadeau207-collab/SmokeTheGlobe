@@ -1,51 +1,39 @@
 // src/components/galaxy/HUD.tsx
+"use client";
+
 import React from "react";
-import type { GalaxyLicense } from "./GalaxyScene";
 
 interface HUDProps {
-  selected: GalaxyLicense | null;
+  totalLicenses?: number;
 }
 
-const HUD: React.FC<HUDProps> = ({ selected }) => {
+const HUD: React.FC<HUDProps> = ({ totalLicenses }) => {
   return (
     <div
       style={{
         position: "fixed",
         left: 16,
         bottom: 16,
-        padding: "12px 16px",
+        padding: "10px 14px",
         borderRadius: 8,
-        background: "rgba(0,0,0,0.7)",
-        color: "#fff",
+        background: "rgba(15,23,42,0.8)",
+        color: "#e5e7eb",
+        fontFamily:
+          "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        fontSize: 12,
         maxWidth: 320,
-        fontFamily: "system-ui, sans-serif",
         pointerEvents: "none",
+        zIndex: 30,
       }}
     >
-      {selected ? (
-        <>
-          <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 4 }}>
-            Selected license
-          </div>
-          <div style={{ fontSize: 16, fontWeight: 600 }}>
-            {selected.name}
-          </div>
-          <div style={{ fontSize: 13, marginTop: 4 }}>
-            Jurisdiction: {selected.jurisdiction || "Unknown"}
-          </div>
-          <div style={{ fontSize: 13, marginTop: 4 }}>
-            Transparency score:{" "}
-            {selected.transparencyScore.toFixed(2)}{" "}
-            <span style={{ fontSize: 11, opacity: 0.7 }}>
-              (experimental)
-            </span>
-          </div>
-        </>
-      ) : (
-        <div style={{ fontSize: 13, opacity: 0.8 }}>
-          Click a node to see license details.
-        </div>
-      )}
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>Supply Chain Galaxy</div>
+      <div>
+        Licenses in view:{" "}
+        {typeof totalLicenses === "number" ? totalLicenses : "–"}
+      </div>
+      <div style={{ marginTop: 6, opacity: 0.75 }}>
+        Transparency score coloring is an experimental internal metric.
+      </div>
     </div>
   );
 };
