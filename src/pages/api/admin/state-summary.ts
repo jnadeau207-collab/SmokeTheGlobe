@@ -1,4 +1,4 @@
-﻿// pages/api/admin/state-summary.ts
+// pages/api/admin/state-summary.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../lib/authOptions';

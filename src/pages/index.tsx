@@ -1,5 +1,5 @@
-﻿import SearchAlgolia from '../components/SearchAlgolia';
-import MapWithSearch from '../components/MapWithSearch';
+import SearchAlgolia from '@/components/SearchAlgolia';
+import MapWithSearch from '@/components/MapWithSearch';
 
 export default function Home() {
   return (

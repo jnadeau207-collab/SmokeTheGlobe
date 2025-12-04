@@ -1,4 +1,4 @@
-﻿import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import AWS from 'aws-sdk';
 import { getServerSession } from 'next-auth/next';
 import authOptions from './auth/[...nextauth]';
