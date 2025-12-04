@@ -1,0 +1,12 @@
+const path = require("path");
+
+module.exports = {
+  experimental: {
+    turbo: false,
+  },
+  webpack: (config) => {
+    config.resolve.alias["@/components"] = path.join(__dirname, "components");
+    config.resolve.alias["@/styles"] = path.join(__dirname, "styles");
+    return config;
+  },
+};

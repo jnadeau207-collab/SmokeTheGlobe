@@ -21,6 +21,7 @@
         "@prisma/adapter-pg": "^7.0.1",
         "@prisma/client": "^7.0.1",
         "@react-google-maps/api": "^2.20.7",
+        "@supabase/auth-helpers-nextjs": "^0.15.0",
         "algoliasearch": "^4.25.3",
         "bcrypt": "^5.1.0",
         "cheerio": "^1.0.0-rc.12",
@@ -35,7 +36,8 @@
         "pdf-parse": "^2.4.5",
         "react": "18.2.0",
         "react-dom": "18.2.0",
-        "slugify": "^1.6.5"
+        "slugify": "^1.6.5",
+        "zod": "^4.1.13"
     },
     "devDependencies": {
         "@types/formidable": "^2.0.5",
