@@ -1,28 +1,24 @@
-import { useMemo } from "react";
-import type { LicenseNode } from "@/store/galaxyStore";
+'use client';
 
-export type LicenseInput = {
-  id: string;
-  name: string;
-  jurisdiction?: string;
-  transparencyScore?: number;
+import { useMemo } from 'react';
+import type { GalaxyLicense } from '@/store/galaxyStore';
+
+export type PositionedLicense = GalaxyLicense & {
+  position: [number, number, number];
 };
 
-export function useGalaxyLayout(licenses: LicenseInput[]): LicenseNode[] {
+export function useGalaxyLayout(licenses: GalaxyLicense[]): PositionedLicense[] {
   return useMemo(() => {
-    if (!licenses || licenses.length === 0) {
-      return [];
-    }
-
-    const radius = 60;
-    const verticalSpread = 40;
     const count = licenses.length;
+    if (count === 0) return [];
+
+    const radius = 40;
 
     return licenses.map((license, index) => {
       const angle = (index / count) * Math.PI * 2;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      const y = ((index / count) - 0.5) * verticalSpread;
+      const x = radius * Math.cos(angle);
+      const y = radius * Math.sin(angle);
+      const z = (Math.random() - 0.5) * 20;
 
       return {
         ...license,

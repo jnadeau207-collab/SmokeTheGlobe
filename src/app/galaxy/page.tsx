@@ -1,8 +1,8 @@
-import { Suspense } from "react";
-import { prisma } from "@/lib/prisma";
-import GalaxyScene, { GalaxyLicense } from "@/components/galaxy/GalaxyScene";
+import GalaxyScene from '@/components/galaxy/GalaxyScene';
+import { prisma } from '@/lib/prisma';
 
-export const dynamic = "force-dynamic";
+// Make sure this route is always dynamic so it sees fresh data
+export const dynamic = 'force-dynamic';
 
 export default async function GalaxyPage() {
   const licenses = await prisma.stateLicense.findMany({
@@ -12,22 +12,14 @@ export default async function GalaxyPage() {
       stateCode: true,
       transparencyScore: true,
     },
-    orderBy: { id: "asc" },
   });
 
-  const licenseData: GalaxyLicense[] = licenses.map((l) => ({
-    id: String(l.id),
-    name: l.entityName ?? `License ${l.id}`,
-    jurisdiction: l.stateCode ?? "",
-    transparencyScore:
-      typeof l.transparencyScore === "number" ? l.transparencyScore : 0,
+  const licenseData = licenses.map((l) => ({
+    id: l.id.toString(),
+    name: l.entityName ?? l.id.toString(),
+    jurisdiction: l.stateCode ?? '',
+    transparencyScore: l.transparencyScore ?? 0,
   }));
 
-  return (
-    <div className="w-full h-screen">
-      <Suspense fallback={<p className="p-4 text-sm text-gray-400">Loading 3D visualization...</p>}>
-        <GalaxyScene licenses={licenseData} />
-      </Suspense>
-    </div>
-  );
+  return <GalaxyScene licenses={licenseData} />;
 }

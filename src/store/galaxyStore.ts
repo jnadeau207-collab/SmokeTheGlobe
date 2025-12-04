@@ -1,23 +1,20 @@
-import { create } from "zustand";
+'use client';
 
-export type LicenseNode = {
+import { create } from 'zustand';
+
+export type GalaxyLicense = {
   id: string;
   name: string;
   jurisdiction?: string;
-  transparencyScore?: number;
-  position: [number, number, number];
+  transparencyScore?: number | null;
 };
 
-export type GalaxyState = {
-  nodes: LicenseNode[];
-  selectedId?: string;
-  setNodes: (nodes: LicenseNode[]) => void;
-  selectNode: (id?: string) => void;
+type GalaxyStoreState = {
+  selectedLicense: GalaxyLicense | null;
+  setSelectedLicense: (license: GalaxyLicense | null) => void;
 };
 
-export const useGalaxyStore = create<GalaxyState>((set) => ({
-  nodes: [],
-  selectedId: undefined,
-  setNodes: (nodes) => set({ nodes }),
-  selectNode: (id) => set({ selectedId: id }),
+export const useGalaxyStore = create<GalaxyStoreState>((set) => ({
+  selectedLicense: null,
+  setSelectedLicense: (selectedLicense) => set({ selectedLicense }),
 }));
