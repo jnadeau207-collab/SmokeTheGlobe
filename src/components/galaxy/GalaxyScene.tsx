@@ -1,26 +1,29 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Scene } from "./Scene";
 import HUD from "./HUD";
-import {
-  useGalaxyStore,
-  License,
-} from "../../store/galaxyStore";
+
+export interface GalaxyLicense {
+  id: string;
+  name: string;
+  jurisdiction: string;
+  transparencyScore: number;
+}
 
 interface GalaxySceneProps {
-  licenses: License[];
+  licenses: GalaxyLicense[];
 }
 
 const GalaxyScene: React.FC<GalaxySceneProps> = ({ licenses }) => {
-  const setLicenses = useGalaxyStore((s) => s.setLicenses);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Seed the store so HUD has access to the same data
-  useEffect(() => {
-    setLicenses(licenses);
-  }, [licenses, setLicenses]);
+  const selectedLicense = useMemo(
+    () => licenses.find((l) => l.id === selectedId) ?? null,
+    [licenses, selectedId]
+  );
 
   return (
     <div
@@ -28,17 +31,21 @@ const GalaxyScene: React.FC<GalaxySceneProps> = ({ licenses }) => {
         width: "100%",
         height: "100vh",
         background: "#000",
-        margin: 0,
-        padding: 0,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Canvas camera={{ position: [0, 0, 80], fov: 60 }}>
+      <Canvas camera={{ position: [0, 0, 120], fov: 70 }}>
         <ambientLight intensity={0.4} />
-        <pointLight position={[30, 30, 30]} intensity={0.8} />
-        <Scene licenses={licenses} />
+        <pointLight position={[50, 50, 50]} intensity={1.2} />
+        <Scene
+          licenses={licenses}
+          onSelectLicense={(license) => setSelectedId(license?.id ?? null)}
+        />
         <OrbitControls enablePan enableZoom enableRotate />
       </Canvas>
-      <HUD />
+
+      <HUD license={selectedLicense} />
     </div>
   );
 };
