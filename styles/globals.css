@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styling */
+body {
+  @apply text-emerald-900;
+}
+
