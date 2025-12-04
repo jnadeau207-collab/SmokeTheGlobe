@@ -1,7 +1,18 @@
 // src/app/api/v1/auth.ts
 import { cookies, headers } from 'next/headers';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from "@supabase/supabase-js";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "../../../lib/authOptions";
+import { prisma } from "../../../lib/prisma";
 import { Database } from '../../../../lib/database.types';
+const supabaseUrl = process.env.SUPABASE_URL;
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error("Supabase environment variables are not set properly");
+}
+const supabaseAdmin = createClient(supabaseUrl!, serviceRoleKey!);
+
 
 export type UserRole = 'business_owner' | 'admin' | 'viewer';
 
