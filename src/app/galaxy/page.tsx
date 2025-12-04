@@ -2,8 +2,8 @@
 
 import GalaxyScene, {
   type GalaxyLicense,
-} from "@/components/galaxy/GalaxyScene";
-import { prisma } from "@/lib/prisma";
+} from "../../components/galaxy/GalaxyScene";
+import { prisma } from "../../lib/prisma";
 
 // Always treat this route as dynamic so it sees fresh data
 export const dynamic = "force-dynamic";
