@@ -126,6 +126,7 @@ model StateLicense {
 
   locations Location[]
   labs      Lab[]
+  transparencyScore Float? @map("transparency_score")
 }
 
 // ---------- Labs & Lab Results ----------
