@@ -15,8 +15,8 @@ function LicensePoints({ licenses }: Props) {
     const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
     licenses.forEach((license, i) => {
-      const score = license.transparencyScore ?? 0; // 0–1 or 0–100, doesn’t matter
-      const radius = 8 + score * 4; // more transparent => further out
+      const score = license.transparencyScore ?? 0;
+      const radius = 8 + score * 4;
       const theta = i * goldenAngle;
       const y = ((i / Math.max(licenses.length, 1)) - 0.5) * 10;
       const x = Math.cos(theta) * radius;
@@ -59,7 +59,7 @@ export default function Scene({ licenses }: Props) {
       <LicensePoints licenses={licenses} />
       <OrbitControls
         enablePan={false}
-        enableZoom={true}
+        enableZoom
         autoRotate
         autoRotateSpeed={0.35}
       />

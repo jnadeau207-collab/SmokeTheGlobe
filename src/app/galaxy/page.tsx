@@ -1,23 +1,9 @@
 // src/app/galaxy/page.tsx
-import dynamicImport from "next/dynamic";
 import { prisma } from "@/lib/prisma";
+import GalaxyScene from "@/components/galaxy/GalaxyScene";
 
 // Always treat this route as dynamic so it sees fresh data
 export const dynamic = "force-dynamic";
-
-const GalaxyScene = dynamicImport(
-  () => import("@/components/galaxy/GalaxyScene"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex h-[calc(100vh-80px)] items-center justify-center bg-gradient-to-b from-slate-950 via-slate-900 to-black">
-        <p className="text-sm text-slate-400">
-          Loading cannabis transparency galaxy…
-        </p>
-      </div>
-    ),
-  }
-);
 
 export default async function GalaxyPage() {
   const licenses = await prisma.stateLicense.findMany({
@@ -41,6 +27,7 @@ export default async function GalaxyPage() {
       {/* Glow background */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.18),_transparent_55%)]" />
 
+      {/* 3D Galaxy */}
       <GalaxyScene licenses={normalized} />
 
       {/* Top gradient & HUD card */}
