@@ -29,34 +29,36 @@ export default async function GalaxyPage() {
   } catch (err: any) {
     console.error("Failed to load licenses for galaxy view", err);
     dbError =
-      "Unable to reach the database. Showing an empty galaxy until Postgres is running.";
+      "Unable to reach the database right now. The galaxy will render, but without live license stars.";
   }
 
   return (
-    <main className="min-h-screen bg-black text-slate-50">
-      <section className="mx-auto max-w-6xl px-6 py-8 space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400/80">
-          Cannabis Transparency Galaxy
+    <main className="min-h-screen bg-slate-950 text-slate-50">
+      <section className="mx-auto max-w-6xl px-6 pt-10 space-y-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.26em] text-emerald-400/90">
+          Transparency Galaxy
         </p>
         <h1 className="text-3xl font-semibold sm:text-4xl">
-          Explore licensed operators as a living starfield.
+          See licensed cannabis operators as a living starfield.
         </h1>
         <p className="max-w-2xl text-sm text-slate-400">
-          Each point of light represents a state license. Transparency scores
-          influence position, color, and intensity, turning public compliance
-          data into an immersive map.
+          Each point of light represents a licensed operator in the U.S. or
+          Canada. Transparency scores determine how bright and how close to the
+          core they appear, turning compliance data into an intuitive map.
         </p>
         {dbError && (
-          <p className="mt-1 text-xs text-amber-400">
+          <p className="max-w-3xl text-xs text-amber-400">
             {dbError} Make sure your{" "}
-            <code className="font-mono">cartfax-dev</code> Postgres database is
-            listening on <code className="font-mono">localhost:5432</code> and
-            that <code className="font-mono">DATABASE_URL</code> is configured.
+            <code className="font-mono">cartfax-dev</code> Postgres container is
+            listening on <code className="font-mono">localhost:5432</code> and{" "}
+            <code className="font-mono">DATABASE_URL</code> points at it.
           </p>
         )}
       </section>
 
-      <GalaxyScene licenses={licenses} />
+      <section className="mx-auto max-w-6xl px-6 pb-10">
+        <GalaxyScene licenses={licenses} />
+      </section>
     </main>
   );
 }
