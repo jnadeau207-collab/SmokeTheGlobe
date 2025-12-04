@@ -1,139 +1,115 @@
-// src/components/galaxy/Scene.tsx
-import React, { useRef, useEffect, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
-import * as THREE from 'three';
-import { useGalaxyLayout } from '../../hooks/useGalaxyLayout';
-import { useGalaxyStore } from '../../store/galaxyStore';
+"use client";
 
-const LICENSE_COLORS: Record<string, THREE.ColorRepresentation> = {
-  cultivator: 'green',
-  retailer: 'blue',
-  laboratory: 'white',
-  manufacturer: 'orange',
-  default: 'gray'
+import React, { useMemo } from "react";
+import { Color } from "three";
+import { useFrame } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
+import { useGalaxyStore } from "@/store/galaxyStore";
+
+type SceneProps = {
+  licenses: {
+    id: string;
+    name: string;
+    jurisdiction?: string;
+    transparencyScore?: number;
+    position: [number, number, number];
+  }[];
 };
 
-type License = {
+type NodeProps = {
   id: string;
   name: string;
-  type: string;
-  region: string;
-  status?: string;
+  jurisdiction?: string;
+  transparencyScore?: number;
+  position: [number, number, number];
 };
 
-interface GalaxyProps {
-  licenses: License[];
-  edges?: [number, number][];
-}
+const LicenseNode: React.FC<NodeProps> = ({
+  id,
+  name,
+  jurisdiction,
+  transparencyScore,
+  position,
+}) => {
+  const selectNode = useGalaxyStore((s) => s.selectNode);
+  const selectedId = useGalaxyStore((s) => s.selectedId);
 
-const SupplyChainGalaxy: React.FC<GalaxyProps> = ({ licenses, edges }) => {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const highlightRef = useRef<THREE.InstancedMesh>(null);
-  const { positions } = useGalaxyLayout(licenses);
+  const isSelected = selectedId === id;
 
-  const setSelectedLicense = useGalaxyStore(state => state.setSelectedLicense);
-  const setHoveredLicenseId = useGalaxyStore(state => state.setHoveredLicenseId);
+  const color = useMemo(() => {
+    const t = typeof transparencyScore === "number" ? transparencyScore : 0;
+    const clamped = Math.max(0, Math.min(1, t));
+    // Green-ish for high transparency, red-ish for low
+    const start = new Color("#ff4b4b");
+    const end = new Color("#4bff7a");
+    return start.lerp(end, clamped);
+  }, [transparencyScore]);
 
-  useEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const dummy = new THREE.Object3D();
-    licenses.forEach((license, i) => {
-      dummy.position.set(
-        positions[i * 3 + 0],
-        positions[i * 3 + 1],
-        positions[i * 3 + 2]
-      );
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
-      const color = LICENSE_COLORS[license.type] || LICENSE_COLORS.default;
-      mesh.setColorAt(i, new THREE.Color(color));
-    });
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [licenses, positions]);
-
-  useFrame(() => {
-    if (!highlightRef.current) return;
-    const hoveredId = useGalaxyStore.getState().hoveredLicenseId;
-    if (hoveredId === null) return;
-    const dummy = new THREE.Object3D();
-    dummy.position.set(
-      positions[hoveredId * 3 + 0],
-      positions[hoveredId * 3 + 1],
-      positions[hoveredId * 3 + 2]
-    );
-    dummy.scale.set(1.5, 1.5, 1.5);
-    dummy.updateMatrix();
-    highlightRef.current.setMatrixAt(0, dummy.matrix);
-    highlightRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  const edgesGeom = useMemo(() => {
-    if (!edges || edges.length === 0) return null;
-    const geom = new THREE.BufferGeometry();
-    const verts: number[] = [];
-    edges.forEach(([i, j]) => {
-      verts.push(
-        positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2],
-        positions[j * 3], positions[j * 3 + 1], positions[j * 3 + 2]
-      );
-    });
-    geom.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
-    return geom;
-  }, [edges, positions]);
-
-  const handlePointerMove = (e: any) => {
-    e.stopPropagation();
-    const instanceId = e.instanceId;
-    if (instanceId !== undefined) {
-      setHoveredLicenseId(instanceId);
-      document.body.style.cursor = 'pointer';
-    }
-  };
-
-  const handlePointerOut = () => {
-    setHoveredLicenseId(null);
-    document.body.style.cursor = 'default';
-  };
-
-  const handlePointerClick = (e: any) => {
-    e.stopPropagation();
-    const instanceId = e.instanceId;
-    if (instanceId !== undefined) {
-      const license = licenses[instanceId];
-      setSelectedLicense(license);
-    }
-  };
+  const scale = isSelected ? 1.6 : 1.0;
 
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 200], fov: 50 }}>
-      <OrbitControls enablePan={false} makeDefault />
-      <ambientLight intensity={0.5} />
-      <pointLight position={[0, 0, 500]} intensity={0.2} />
-      <Stars radius={1000} depth={500} count={10000} factor={4} saturation={0} fade speed={1} />
-      <instancedMesh
-        ref={meshRef}
-        args={[undefined as any, undefined as any, licenses.length]}
-        onPointerMove={handlePointerMove}
-        onPointerOut={handlePointerOut}
-        onPointerDown={handlePointerClick}
+    <group position={position}>
+      <mesh
+        scale={scale}
+        onClick={(e) => {
+          e.stopPropagation();
+          selectNode(isSelected ? undefined : id);
+        }}
       >
-        <sphereGeometry args={[1, 8, 8]} />
-        <meshStandardMaterial vertexColors />
-      </instancedMesh>
-      <instancedMesh ref={highlightRef} args={[undefined as any, undefined as any, 1]}>
-        <sphereGeometry args={[1.2, 8, 8]} />
-        <meshBasicMaterial color="yellow" transparent opacity={0.8} />
-      </instancedMesh>
-      {edgesGeom && (
-        <lineSegments geometry={edgesGeom}>
-          <lineBasicMaterial color="#888" transparent opacity={0.5} />
-        </lineSegments>
+        <sphereGeometry args={[1, 16, 16]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
+      </mesh>
+      {isSelected && (
+        <Html distanceFactor={8}>
+          <div
+            style={{
+              padding: "4px 8px",
+              borderRadius: "4px",
+              background: "rgba(0,0,0,0.7)",
+              color: "white",
+              fontSize: "10px",
+              whiteSpace: "nowrap",
+            }}
+          >
+            <div>{name}</div>
+            {jurisdiction && <div style={{ opacity: 0.8 }}>{jurisdiction}</div>}
+          </div>
+        </Html>
       )}
-    </Canvas>
+    </group>
   );
 };
 
-export default SupplyChainGalaxy;
+export const Scene: React.FC<SceneProps> = ({ licenses }) => {
+  const setNodes = useGalaxyStore((s) => s.setNodes);
+
+  // Keep Zustand store in sync (for HUD)
+  useMemo(() => {
+    setNodes(
+      licenses.map((l) => ({
+        id: l.id,
+        name: l.name,
+        jurisdiction: l.jurisdiction,
+        transparencyScore: l.transparencyScore,
+        position: l.position,
+      }))
+    );
+  }, [licenses, setNodes]);
+
+  const groupRef = React.useRef<THREE.Group>(null!);
+
+  // Slow rotation of whole galaxy
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.03;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {licenses.map((license) => (
+        <LicenseNode key={license.id} {...license} />
+      ))}
+    </group>
+  );
+};

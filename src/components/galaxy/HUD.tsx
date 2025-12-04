@@ -1,29 +1,57 @@
-// src/components/galaxy/HUD.tsx
-import React from 'react';
-import { useGalaxyStore } from '../../store/galaxyStore';
+"use client";
+
+import React from "react";
+import { useGalaxyStore } from "@/store/galaxyStore";
 
 const HUD: React.FC = () => {
-  const selectedLicense = useGalaxyStore(state => state.selectedLicense);
-
-  if (!selectedLicense) {
-    return null;
-  }
-
-  const { id, name, type, region, status } = selectedLicense;
+  const nodes = useGalaxyStore((s) => s.nodes);
+  const selectedId = useGalaxyStore((s) => s.selectedId);
+  const selected = nodes.find((n) => n.id === selectedId);
 
   return (
     <div
-      className="fixed bottom-8 right-8 w-64 p-4 rounded-xl bg-white/30 backdrop-blur-xl text-white shadow-xl pointer-events-none 
-                 transform [perspective:800px] rotate-y-3"
-      style={{ transformStyle: 'preserve-3d' }}
+      style={{
+        position: "fixed",
+        left: 16,
+        bottom: 16,
+        padding: "12px 16px",
+        borderRadius: 8,
+        background: "rgba(0, 0, 0, 0.7)",
+        color: "white",
+        maxWidth: 360,
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+        pointerEvents: "none",
+      }}
     >
-      <h3 className="text-lg font-semibold mb-2">{name || `License ${id}`}</h3>
-      <ul className="text-sm space-y-1">
-        <li><span className="font-medium">ID:</span> {id}</li>
-        <li><span className="font-medium">Type:</span> {type}</li>
-        <li><span className="font-medium">Region:</span> {region}</li>
-        {status && <li><span className="font-medium">Status:</span> {status}</li>}
-      </ul>
+      <div style={{ fontSize: 12, textTransform: "uppercase", opacity: 0.7 }}>
+        Supply Chain Galaxy
+      </div>
+      {selected ? (
+        <>
+          <div style={{ marginTop: 4, fontSize: 16, fontWeight: 600 }}>
+            {selected.name || "Unknown license"}
+          </div>
+          <div style={{ marginTop: 2, fontSize: 12, opacity: 0.9 }}>
+            {selected.jurisdiction || "Unknown jurisdiction"}
+          </div>
+          <div style={{ marginTop: 6, fontSize: 12 }}>
+            Transparency score:{" "}
+            <strong>
+              {typeof selected.transparencyScore === "number"
+                ? selected.transparencyScore.toFixed(2)
+                : "n/a"}
+            </strong>{" "}
+            <span style={{ opacity: 0.7 }}>(experimental metric)</span>
+          </div>
+          <div style={{ marginTop: 8, fontSize: 11, opacity: 0.7 }}>
+            Tip: click a different node to change focus, or click empty space to clear selection.
+          </div>
+        </>
+      ) : (
+        <div style={{ marginTop: 4, fontSize: 12, opacity: 0.85 }}>
+          Click a node in the galaxy to inspect its license details.
+        </div>
+      )}
     </div>
   );
 };

@@ -21,6 +21,8 @@
         "@prisma/adapter-pg": "^7.0.1",
         "@prisma/client": "^7.0.1",
         "@react-google-maps/api": "^2.20.7",
+        "@react-three/drei": "^8.20.2",
+        "@react-three/fiber": "^8.18.0",
         "@supabase/auth-helpers-nextjs": "^0.15.0",
         "algoliasearch": "^4.25.3",
         "bcrypt": "^5.1.0",
@@ -37,7 +39,9 @@
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "slugify": "^1.6.5",
-        "zod": "^4.1.13"
+        "three": "^0.144.0",
+        "zod": "^4.1.13",
+        "zustand": "^4.5.7"
     },
     "devDependencies": {
         "@types/formidable": "^2.0.5",

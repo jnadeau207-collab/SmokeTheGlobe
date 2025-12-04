@@ -1,24 +1,23 @@
-// src/store/galaxyStore.ts
-import { create } from 'zustand';
+import { create } from "zustand";
 
-type License = {
+export type LicenseNode = {
   id: string;
   name: string;
-  type: string;
-  region: string;
-  status?: string;
+  jurisdiction?: string;
+  transparencyScore?: number;
+  position: [number, number, number];
 };
 
-type GalaxyState = {
-  selectedLicense: License | null;
-  hoveredLicenseId: number | null;
-  setSelectedLicense: (lic: License | null) => void;
-  setHoveredLicenseId: (id: number | null) => void;
+export type GalaxyState = {
+  nodes: LicenseNode[];
+  selectedId?: string;
+  setNodes: (nodes: LicenseNode[]) => void;
+  selectNode: (id?: string) => void;
 };
 
 export const useGalaxyStore = create<GalaxyState>((set) => ({
-  selectedLicense: null,
-  hoveredLicenseId: null,
-  setSelectedLicense: (selectedLicense) => set({ selectedLicense }),
-  setHoveredLicenseId: (hoveredLicenseId) => set({ hoveredLicenseId }),
+  nodes: [],
+  selectedId: undefined,
+  setNodes: (nodes) => set({ nodes }),
+  selectNode: (id) => set({ selectedId: id }),
 }));
