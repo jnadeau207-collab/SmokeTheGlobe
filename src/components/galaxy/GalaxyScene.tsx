@@ -1,9 +1,9 @@
+// src/components/galaxy/GalaxyScene.tsx
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { Scene } from "./Scene";
+import Scene from "./Scene";
 import HUD from "./HUD";
 
 export interface GalaxyLicense {
@@ -17,35 +17,48 @@ interface GalaxySceneProps {
   licenses: GalaxyLicense[];
 }
 
+interface PositionedNode {
+  license: GalaxyLicense;
+  position: [number, number, number];
+}
+
 const GalaxyScene: React.FC<GalaxySceneProps> = ({ licenses }) => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const selectedLicense = useMemo(
-    () => licenses.find((l) => l.id === selectedId) ?? null,
-    [licenses, selectedId]
-  );
+  // Very simple radial layout: place licenses around a circle,
+  // with radius slightly influenced by transparencyScore
+  const nodes: PositionedNode[] = useMemo(() => {
+    const count = Math.max(licenses.length, 1);
+
+    return licenses.map((license, index) => {
+      const angle = (index / count) * Math.PI * 2;
+      const radius = 30 + license.transparencyScore * 10;
+
+      const position: [number, number, number] = [
+        radius * Math.cos(angle),
+        radius * Math.sin(angle),
+        0,
+      ];
+
+      return { license, position };
+    });
+  }, [licenses]);
+
+  const selectedLicense =
+    nodes.find((n) => n.license.id === selectedId)?.license ?? null;
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100vh",
-        background: "#000",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <Canvas camera={{ position: [0, 0, 120], fov: 70 }}>
-        <ambientLight intensity={0.4} />
-        <pointLight position={[50, 50, 50]} intensity={1.2} />
+    <div style={{ width: "100%", height: "100vh", background: "#000" }}>
+      <Canvas camera={{ position: [0, 0, 120], fov: 60 }}>
+        <ambientLight intensity={0.3} />
+        <pointLight position={[50, 50, 50]} />
         <Scene
-          licenses={licenses}
-          onSelectLicense={(license) => setSelectedId(license?.id ?? null)}
+          nodes={nodes}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
         />
-        <OrbitControls enablePan enableZoom enableRotate />
       </Canvas>
-
-      <HUD license={selectedLicense} />
+      <HUD selected={selectedLicense} />
     </div>
   );
 };

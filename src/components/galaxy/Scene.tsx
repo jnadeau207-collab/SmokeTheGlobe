@@ -1,72 +1,49 @@
-"use client";
+// src/components/galaxy/Scene.tsx
+import React from "react";
+import type { ThreeEvent } from "@react-three/fiber";
+import type { GalaxyLicense } from "./GalaxyScene";
 
-import React, { useEffect, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { useGalaxyLayout } from "../../hooks/useGalaxyLayout";
-import {
-  useGalaxyStore,
-  License,
-} from "../../store/galaxyStore";
-
-interface SceneProps {
-  licenses: License[];
+export interface GalaxyNode {
+  license: GalaxyLicense;
+  position: [number, number, number];
 }
 
-export const Scene: React.FC<SceneProps> = ({ licenses }) => {
-  const groupRef = useRef<THREE.Group>(null);
-  const nodes = useGalaxyLayout(licenses);
-  const select = useGalaxyStore((s) => s.select);
-  const selectedId = useGalaxyStore((s) => s.selectedId);
+interface SceneProps {
+  nodes: GalaxyNode[];
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+}
 
-  // Keep the store in sync so HUD can read selected node details
-  useEffect(() => {
-    const { setLicenses } = useGalaxyStore.getState();
-    setLicenses(licenses);
-  }, [licenses]);
-
-  useFrame(({ clock }) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.03;
-    }
-  });
-
+const Scene: React.FC<SceneProps> = ({ nodes, selectedId, onSelect }) => {
   return (
-    <group ref={groupRef}>
-      {nodes.map((node) => {
-        const isSelected = node.id === selectedId;
-        const scale = isSelected ? 1.3 : 1;
-        const color = isSelected
-          ? "#ffcc00"
-          : node.transparencyScore && node.transparencyScore > 0.66
-          ? "#00ff99"
-          : node.transparencyScore && node.transparencyScore > 0.33
-          ? "#00aaff"
-          : "#8888ff";
+    <>
+      {nodes.map(({ license, position }) => {
+        const isSelected = selectedId === license.id;
+        const baseSize = 1.2 + license.transparencyScore * 0.4;
+        const scale = isSelected ? baseSize * 1.4 : baseSize;
+
+        const handleClick = (event: ThreeEvent<MouseEvent>) => {
+          event.stopPropagation();
+          onSelect(isSelected ? null : license.id);
+        };
 
         return (
           <mesh
-            key={node.id}
-            position={node.position}
-            scale={scale}
-            onClick={(e) => {
-              e.stopPropagation();
-              select(node.id);
-            }}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              document.body.style.cursor = "pointer";
-            }}
-            onPointerOut={(e) => {
-              e.stopPropagation();
-              document.body.style.cursor = "default";
-            }}
+            key={license.id}
+            position={position}
+            onClick={handleClick}
+            scale={[scale, scale, scale]}
           >
-            <sphereGeometry args={[1.2, 16, 16]} />
-            <meshStandardMaterial color={color} />
+            <sphereGeometry args={[1, 16, 16]} />
+            <meshStandardMaterial
+              emissive={"white"}
+              emissiveIntensity={0.5 + license.transparencyScore * 0.5}
+            />
           </mesh>
         );
       })}
-    </group>
+    </>
   );
 };
+
+export default Scene;

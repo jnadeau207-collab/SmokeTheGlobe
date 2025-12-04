@@ -1,16 +1,12 @@
-"use client";
-
+// src/components/galaxy/HUD.tsx
 import React from "react";
-import { useGalaxyStore } from "../../store/galaxyStore";
+import type { GalaxyLicense } from "./GalaxyScene";
 
-const HUD: React.FC = () => {
-  const { nodes, selectedId } = useGalaxyStore((state) => ({
-    nodes: state.nodes,
-    selectedId: state.selectedId,
-  }));
+interface HUDProps {
+  selected: GalaxyLicense | null;
+}
 
-  const selected = nodes.find((n) => n.id === selectedId);
-
+const HUD: React.FC<HUDProps> = ({ selected }) => {
   return (
     <div
       style={{
@@ -21,44 +17,32 @@ const HUD: React.FC = () => {
         borderRadius: 8,
         background: "rgba(0,0,0,0.7)",
         color: "#fff",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-        maxWidth: 360,
+        maxWidth: 320,
+        fontFamily: "system-ui, sans-serif",
         pointerEvents: "none",
-        zIndex: 1000,
       }}
     >
       {selected ? (
         <>
-          <div style={{ fontSize: 13, opacity: 0.7 }}>
+          <div style={{ fontSize: 12, opacity: 0.7, marginBottom: 4 }}>
             Selected license
           </div>
-          <div
-            style={{
-              fontSize: 18,
-              fontWeight: 600,
-              marginTop: 2,
-              wordBreak: "break-word",
-            }}
-          >
+          <div style={{ fontSize: 16, fontWeight: 600 }}>
             {selected.name}
           </div>
-          {selected.jurisdiction && (
-            <div style={{ fontSize: 14, marginTop: 4 }}>
-              Jurisdiction: {selected.jurisdiction}
-            </div>
-          )}
-          <div style={{ fontSize: 14, marginTop: 4 }}>
+          <div style={{ fontSize: 13, marginTop: 4 }}>
+            Jurisdiction: {selected.jurisdiction || "Unknown"}
+          </div>
+          <div style={{ fontSize: 13, marginTop: 4 }}>
             Transparency score:{" "}
-            {typeof selected.transparencyScore === "number"
-              ? selected.transparencyScore.toFixed(2)
-              : "N/A"}{" "}
-            <span style={{ opacity: 0.7 }}>
+            {selected.transparencyScore.toFixed(2)}{" "}
+            <span style={{ fontSize: 11, opacity: 0.7 }}>
               (experimental)
             </span>
           </div>
         </>
       ) : (
-        <div style={{ fontSize: 14, opacity: 0.8 }}>
+        <div style={{ fontSize: 13, opacity: 0.8 }}>
           Click a node to see license details.
         </div>
       )}
