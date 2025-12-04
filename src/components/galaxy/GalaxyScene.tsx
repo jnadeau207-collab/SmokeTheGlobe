@@ -1,33 +1,30 @@
-// src/components/galaxy/GalaxyScene.tsx
 "use client";
 
+import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
-import Scene from "@/components/galaxy/Scene";
+import Scene from "./Scene";
 
 export type GalaxyLicense = {
-  id: string;
-  entityName: string;
-  stateCode: string;
-  transparencyScore: number;
+  id: number | string;
+  entityName?: string | null;
+  stateCode?: string | null;
+  transparencyScore?: number | null;
 };
 
-interface Props {
+type GalaxySceneProps = {
   licenses: GalaxyLicense[];
-}
+};
 
-export default function GalaxyScene({ licenses }: Props) {
+const GalaxyScene: React.FC<GalaxySceneProps> = ({ licenses }) => {
   return (
-    <div className="h-full w-full">
-      <Canvas
-        camera={{ position: [0, 0, 36], fov: 55 }}
-        dpr={[1, 2]}
-        className="h-full w-full"
-      >
-        <Suspense fallback={null}>
-          <Scene licenses={licenses} />
-        </Suspense>
+    <div className="relative h-[calc(100vh-80px)] w-full bg-gradient-to-b from-slate-950 via-slate-900 to-black">
+      <Canvas camera={{ position: [0, 0, 18], fov: 55 }}>
+        <color attach="background" args={["#020617"]} />
+        <fog attach="fog" args={["#020617", 10, 40]} />
+        <Scene licenses={licenses} />
       </Canvas>
     </div>
   );
-}
+};
+
+export default GalaxyScene;

@@ -1,46 +1,62 @@
-// src/app/galaxy/page.tsx
+import GalaxyScene, {
+  type GalaxyLicense,
+} from "@/components/galaxy/GalaxyScene";
 import { prisma } from "@/lib/prisma";
-import GalaxyScene from "@/components/galaxy/GalaxyScene";
 
-// Always treat this route as dynamic so it sees fresh data
 export const dynamic = "force-dynamic";
 
 export default async function GalaxyPage() {
-  const licenses = await prisma.stateLicense.findMany({
-    select: {
-      id: true,
-      entityName: true,
-      stateCode: true,
-      transparencyScore: true,
-    },
-  });
+  let licenses: GalaxyLicense[] = [];
+  let dbError = "";
 
-  const normalized = licenses.map((l) => ({
-    id: String(l.id),
-    entityName: l.entityName ?? "",
-    stateCode: l.stateCode ?? "",
-    transparencyScore: l.transparencyScore ?? 0,
-  }));
+  try {
+    const raw = await prisma.stateLicense.findMany({
+      select: {
+        id: true,
+        entityName: true,
+        stateCode: true,
+        transparencyScore: true,
+      },
+      take: 1500,
+    });
+
+    licenses = raw.map((row) => ({
+      id: row.id,
+      entityName: row.entityName,
+      stateCode: row.stateCode,
+      transparencyScore: row.transparencyScore,
+    }));
+  } catch (err: any) {
+    console.error("Failed to load licenses for galaxy view", err);
+    dbError =
+      "Unable to reach the database. Showing an empty galaxy until Postgres is running.";
+  }
 
   return (
-    <div className="relative h-[calc(100vh-80px)] w-full overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-black">
-      {/* Glow background */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_55%),_radial-gradient(circle_at_bottom,_rgba(56,189,248,0.18),_transparent_55%)]" />
+    <main className="min-h-screen bg-black text-slate-50">
+      <section className="mx-auto max-w-6xl px-6 py-8 space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400/80">
+          Cannabis Transparency Galaxy
+        </p>
+        <h1 className="text-3xl font-semibold sm:text-4xl">
+          Explore licensed operators as a living starfield.
+        </h1>
+        <p className="max-w-2xl text-sm text-slate-400">
+          Each point of light represents a state license. Transparency scores
+          influence position, color, and intensity, turning public compliance
+          data into an immersive map.
+        </p>
+        {dbError && (
+          <p className="mt-1 text-xs text-amber-400">
+            {dbError} Make sure your{" "}
+            <code className="font-mono">cartfax-dev</code> Postgres database is
+            listening on <code className="font-mono">localhost:5432</code> and
+            that <code className="font-mono">DATABASE_URL</code> is configured.
+          </p>
+        )}
+      </section>
 
-      {/* 3D Galaxy */}
-      <GalaxyScene licenses={normalized} />
-
-      {/* Top gradient & HUD card */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent" />
-      <div className="pointer-events-none absolute bottom-6 left-1/2 w-full max-w-3xl -translate-x-1/2 px-4">
-        <div className="mx-auto rounded-3xl border border-emerald-400/20 bg-slate-950/60 px-4 py-3 text-center text-xs text-slate-300 backdrop-blur-xl shadow-[0_0_40px_rgba(16,185,129,0.35)]">
-          <span className="font-semibold text-emerald-300">
-            Cannabis Transparency Galaxy
-          </span>{" "}
-          · Each point is a license. Radius, color and glow encode regulatory
-          transparency.
-        </div>
-      </div>
-    </div>
+      <GalaxyScene licenses={licenses} />
+    </main>
   );
 }
