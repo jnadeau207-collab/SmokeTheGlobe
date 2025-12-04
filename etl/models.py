@@ -29,7 +29,6 @@ class LicenseEntity(BaseModel):
     Fields align with the `licenses` table in Postgres:
       - column names = snake_case
       - region_config is a JSONB bag for region-specific quirks
-      - transparency_score is maintained later by ERP "Shadow Logic"
     """
 
     id: Optional[UUID] = Field(
@@ -63,7 +62,6 @@ class LicenseEntity(BaseModel):
         description="Region-specific fields from OpenTHC-like schemas.",
     )
 
-    transparency_score: Decimal = Field(
         default=Decimal("0"),
         description="Aggregate metric; updated later by triggers.",
     )

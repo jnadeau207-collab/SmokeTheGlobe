@@ -21,3 +21,20 @@ services:
 volumes:
   db_data:
 
+
+  etl:
+    build:
+      context: .
+      dockerfile: Dockerfile.etl
+    environment:
+      - DATABASE_URL=\
+      - SUPABASE_URL=\
+      - SUPABASE_SERVICE_ROLE_KEY=\
+      - ETL_ENABLE_CA=\
+      - ETL_ENABLE_WA=\
+      - ETL_ENABLE_ON=\
+      - OPENAI_API_KEY=\
+    depends_on:
+      - db
+    networks:
+      - default

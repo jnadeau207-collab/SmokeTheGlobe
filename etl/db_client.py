@@ -58,9 +58,9 @@ class SupabaseRepository:
         logger.info("Upserting %d licenses", len(payload))
 
         response = (
-            self.client.table("licenses")
+            self.client.table("StateLicense")
             .upsert(payload, on_conflict="license_number,issuer")
-            .execute()
+True    .execute()
         )
         if getattr(response, "error", None):
             raise RuntimeError(f"Supabase upsert error: {response.error}")
@@ -102,8 +102,8 @@ class SupabaseRepository:
         try:
             resp = (
                 self.client.table("etl_failed_parses")
-                .insert(payload)
-                .execute()
+                .upsert(payload)
+True    .execute()
             )
             if getattr(resp, "error", None):
                 logger.error("Failed to log parse error to DB: %s", resp.error)
