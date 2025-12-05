@@ -7,7 +7,12 @@ export const metadata = {
   title: "Admin · Smoke The Globe",
 };
 
-export default async function AdminLayout({ children }: { children: ReactNode }) {
-  await requireRole("admin");
+export default async function AdminLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  // After login, bring the user back to /admin.
+  await requireRole("admin", "/admin");
   return <AdminShell>{children}</AdminShell>;
 }

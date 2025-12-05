@@ -9,7 +9,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { redirect } from "next/navigation";
 
 /**
- * Extend NextAuth's Session/User to include a role.
+ * Extend NextAuth's Session and User objects to include a strong role field.
  */
 declare module "next-auth" {
   interface Session {
@@ -24,15 +24,23 @@ declare module "next-auth" {
   }
 }
 
+/**
+ * Central NextAuth configuration used by both:
+ * - /api/auth/[...nextauth] (Pages Router)
+ * - App Router helpers (requireUser / requireRole)
+ *
+ * NOTE: We intentionally use a "bootstrap" credentials admin for now,
+ * backed by environment variables only. No secrets are hardcoded here.
+ */
 export const authOptions: NextAuthOptions = {
-  // No database adapter for now – pure JWT sessions
+  // Pure JWT sessions; no DB adapter yet.
   session: {
     strategy: "jwt",
   },
 
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: "Admin credentials",
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
@@ -52,9 +60,11 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // Simple "bootstrap" admin auth – replace with real DB-backed auth later.
+        // Simple single-admin bootstrap flow.
+        // For production, replace this with a proper user store
+        // and hashed passwords.
         if (
-          credentials.email === adminEmail &&
+          credentials.email.toLowerCase() === adminEmail.toLowerCase() &&
           credentials.password === adminPassword
         ) {
           return {
@@ -65,21 +75,19 @@ export const authOptions: NextAuthOptions = {
           } as any;
         }
 
-        // You can expand here later:
-        // - Look up operator / regulator / analyst accounts in the DB
-        // - Check hashed passwords, etc.
+        // Future: support operator / regulator / analyst accounts here.
         return null;
       },
     }),
-    // If you had OAuth providers (Google, etc.) before, re-add them here.
   ],
 
   callbacks: {
     async jwt({ token, user }) {
-      // On first login, persist id/role from the user into the token
+      // On first login, persist id/role from the user into the token.
       if (user) {
-        token.id = (user as any).id ?? token.id ?? "anonymous";
-        token.role = (user as any).role ?? token.role ?? "admin";
+        (token as any).id = (user as any).id ?? (token as any).id ?? "anonymous";
+        (token as any).role =
+          (user as any).role ?? (token as any).role ?? "consumer";
       }
       return token;
     },
@@ -87,41 +95,55 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = (token as any).id ?? "anonymous";
-        (session.user as any).role = (token as any).role ?? "consumer";
+        (session.user as any).role =
+          (token as any).role ?? ("consumer" as Session["user"]["role"]);
       }
       return session;
     },
   },
 
-  // Use the built‑in NextAuth sign‑in page at /api/auth/signin
-  pages: {},
+  // Use our custom sign-in page, not the default /api/auth/signin UI.
+  pages: {
+    signIn: "/auth/signin",
+  },
 };
 
 /**
- * Require that a user is signed in.
- * Redirects to the NextAuth sign-in with a callbackUrl back to home.
+ * Require a logged-in user in an App Router server context.
+ *
+ * @param callbackUrl Where to send the user back to after successful login.
+ *                    Must be a path on this same site (e.g. "/admin").
  */
-export async function requireUser(): Promise<Session> {
+export async function requireUser(
+  callbackUrl: string = "/"
+): Promise<Session> {
   const session = await getServerSession(authOptions);
+
   if (!session) {
-    redirect("/api/auth/signin?callbackUrl=/");
+    const encoded = encodeURIComponent(callbackUrl || "/");
+    // NextAuth will use callbackUrl to redirect back after login.
+    redirect(`/auth/signin?callbackUrl=${encoded}`);
   }
+
   return session;
 }
 
 /**
- * Require that the user has one of the allowed roles.
- * Redirects home if unauthorized.
+ * Require that the currently logged-in user has one of the allowed roles.
+ *
+ * @param roles       Single role or array of roles that are allowed.
+ * @param callbackUrl Where the user *intended* to go (used for post-login redirect).
  */
 export async function requireRole(
-  roles: Session["user"]["role"] | Session["user"]["role"][]
+  roles: Session["user"]["role"] | Session["user"]["role"][],
+  callbackUrl: string = "/"
 ): Promise<Session> {
   const allowed = Array.isArray(roles) ? roles : [roles];
-  const session = await requireUser();
+  const session = await requireUser(callbackUrl);
 
   const role = (session.user as any).role as Session["user"]["role"];
   if (!allowed.includes(role)) {
-    // Could be /forbidden later; for now, bounce home.
+    // Later we can route this to a dedicated /forbidden page.
     redirect("/");
   }
 
