@@ -1,5 +1,6 @@
 // src/app/admin/layout.tsx
 import { requireRole } from "@/lib/auth";
+import type { ReactNode } from "react";
 import AdminShell from "./shell";  // client shell for layout
 
 export const metadata = { title: "Admin · SmokeTheGlobe" };

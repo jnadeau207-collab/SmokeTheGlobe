@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
         if (message.includes("License not found")) {
             return NextResponse.json({ error: "License not found" }, { status: 400 });
         }
-        # Catch-all for other server errors
+        // Catch-all for other server errors
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

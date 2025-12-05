@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/auth";
+import type { ReactNode } from "react";
 export const metadata = { title: "Analytics Lab · SmokeTheGlobe" };
 
 export default async function AnalyticsLayout({ children }: { children: React.ReactNode }) {

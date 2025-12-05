@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/auth";
+import type { ReactNode } from "react";
 export const metadata = { title: "Operator Suite · SmokeTheGlobe" };
 
 export default async function OperatorLayout({ children }: { children: React.ReactNode }) {

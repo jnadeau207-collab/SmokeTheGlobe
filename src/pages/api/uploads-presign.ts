@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import AWS from 'aws-sdk';
 import { getServerSession } from 'next-auth/next';
-import authOptions from '@/lib/auth';
+import { authOptions } from '@/lib/auth';
 import crypto from 'crypto';
 const s3 = new AWS.S3({
   region: process.env.AWS_REGION,

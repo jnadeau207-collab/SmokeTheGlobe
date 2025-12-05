@@ -1,4 +1,5 @@
 import { requireRole } from "@/lib/auth";
+import type { ReactNode } from "react";
 export const metadata = { title: "Regulator Console · SmokeTheGlobe" };
 
 export default async function RegulatorLayout({ children }: { children: React.ReactNode }) {
