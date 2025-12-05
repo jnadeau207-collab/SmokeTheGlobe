@@ -1,7 +1,8 @@
 ﻿// pages/api/admin/lab-results/[id].ts
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';`r`nimport { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
