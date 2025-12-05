@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../auth/[...nextauth]';
+import { authOptions } from '@/lib/auth';
 import formidable from 'formidable';
 import { parse } from 'csv-parse/sync';
 import { upsertLicenseRecord, LicenseInput } from '../../../../lib/licensing';

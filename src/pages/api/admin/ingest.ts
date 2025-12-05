@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]';
+import { authOptions } from '@/lib/auth';
 import { ingestMaineLicenses } from '../../../lib/importers/maine';
 import { ingestMassachusettsLicenses } from '../../../lib/importers/massachusetts';
 import { ingestColoradoLicenses } from '../../../lib/importers/colorado';

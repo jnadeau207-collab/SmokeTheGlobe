@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../../../lib/authOptions';
+import { authOptions } from '@/lib/auth';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });

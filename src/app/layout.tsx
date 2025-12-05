@@ -1,18 +1,18 @@
 // src/app/layout.tsx
-import "../styles/globals.css";
-import { SessionProvider } from "next-auth/react";
+import "./globals.css";
 import type { ReactNode } from "react";
+import Providers from "./providers";
 
 export const metadata = {
-  title: "SmokeTheGlobe",
-  description: "Global cannabis transparency platform",
+  title: "Smoke The Globe",
+  description: "Global cannabis transparency, from seed to sale.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="h-full bg-slate-950">
       <body className="min-h-screen bg-slate-950 text-slate-50 antialiased">
-        <SessionProvider>{children}</SessionProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

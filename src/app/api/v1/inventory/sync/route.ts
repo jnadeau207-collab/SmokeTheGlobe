@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/pages/api/auth/[...nextauth]";
+import { authOptions } from "@/lib/auth";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import type { Database } from "@/types/database";
 import { prisma } from "@/lib/prisma";
@@ -43,30 +43,30 @@ export async function POST(request: NextRequest) {
 
         // 6. Idempotent database upsert logic for Batch and BatchLocation
         const now = new Date();
-        # Find existing Batch by batchCode, or create if it doesn't exist
+        // Find existing Batch by batchCode, or create if it doesn't exist
         let batch = await prisma.batch.findFirst({ where: { batchCode: data.batch_number } });
         if (!batch) {
             batch = await prisma.batch.create({ data: { batchCode: data.batch_number, jurisdiction: license.stateCode } });
         }
-        # Ensure BatchLocation link exists between this batch and location; update timestamp if it exists
+        // Ensure BatchLocation link exists between this batch and location; update timestamp if it exists
         await prisma.batchLocation.upsert({
             where: { batchId_locationId: { batchId: batch.id, locationId: location.id } },
             update: { lastSeenAt: now },
             create: { batchId: batch.id, locationId: location.id, firstSeenAt: now, lastSeenAt: now }
         });
 
-        # 7. Log success for auditing
+        // 7. Log success for auditing
         console.log(`Inventory sync succeeded for license ${data.license_number} by user ${userId}`);
 
-        # 8. Respond with success confirmation
+        // 8. Respond with success confirmation
         return NextResponse.json({ ok: true });
     } catch (error) {
         console.error("Inventory sync error:", error);
-        # Handle validation errors (bad request)
+        // Handle validation errors (bad request)
         if (error instanceof import("zod").ZodError) {
             return NextResponse.json({ error: "Invalid request payload", details: error.issues }, { status: 400 });
         }
-        # Handle authorization/ownership errors
+        // Handle authorization/ownership errors
         const message = (error as Error).message || String(error);
         if (message.includes("Forbidden")) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
