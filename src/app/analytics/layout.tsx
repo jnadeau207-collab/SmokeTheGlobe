@@ -1,9 +1,16 @@
-import { requireRole } from "@/lib/auth";
+// src/app/analytics/layout.tsx
 import type { ReactNode } from "react";
-export const metadata = { title: "Analytics Lab · SmokeTheGlobe" };
+import { requireRole } from "@/lib/auth";
 
-export default async function AnalyticsLayout({ children }: { children: React.ReactNode }) {
-  // Allow analysts and admins
-  await requireRole(["analyst", "admin"]);
-  return <div className="min-h-screen bg-slate-950 text-slate-50">{children}</div>;
+export const metadata = {
+  title: "Analytics lab · Smoke The Globe",
+};
+
+export default async function AnalyticsLayout({ children }: { children: ReactNode }) {
+  await requireRole(["admin", "analyst"]);
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">{children}</div>
+    </div>
+  );
 }

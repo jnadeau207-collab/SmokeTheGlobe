@@ -5,7 +5,8 @@ import Providers from "./providers";
 
 export const metadata = {
   title: "Smoke The Globe",
-  description: "Global cannabis transparency, from seed to sale.",
+  description:
+    "Global cannabis transparency – licenses, lab results, and seed-to-sale oversight.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

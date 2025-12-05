@@ -1,9 +1,16 @@
-import { requireRole } from "@/lib/auth";
+// src/app/regulator/layout.tsx
 import type { ReactNode } from "react";
-export const metadata = { title: "Regulator Console · SmokeTheGlobe" };
+import { requireRole } from "@/lib/auth";
 
-export default async function RegulatorLayout({ children }: { children: React.ReactNode }) {
-  // Allow regulator role (and admin)
-  await requireRole(["regulator", "admin"]);
-  return <div className="min-h-screen bg-slate-950 text-slate-50">{children}</div>;
+export const metadata = {
+  title: "Regulator console · Smoke The Globe",
+};
+
+export default async function RegulatorLayout({ children }: { children: ReactNode }) {
+  await requireRole("regulator");
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">{children}</div>
+    </div>
+  );
 }

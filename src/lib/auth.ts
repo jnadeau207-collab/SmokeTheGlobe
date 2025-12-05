@@ -1,66 +1,107 @@
 // src/lib/auth.ts
-import { NextAuthOptions, DefaultSession, getServerSession } from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";  // if you use Prisma adapter
+import {
+  type NextAuthOptions,
+  type DefaultSession,
+  getServerSession,
+  type Session,
+} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
-// Extend NextAuth session types to include our role
+/**
+ * Extend NextAuth's Session/User to include a role.
+ */
 declare module "next-auth" {
   interface Session {
     user: DefaultSession["user"] & {
       id: string;
-      role: "admin" | "operator" | "producer" | "retailer" | "regulator" | "analyst" | "consumer";
+      role: "admin" | "operator" | "regulator" | "analyst" | "consumer";
     };
+  }
+
+  interface User {
+    role: "admin" | "operator" | "regulator" | "analyst" | "consumer";
   }
 }
 
 export const authOptions: NextAuthOptions = {
-  session: { strategy: "jwt" },
+  // No database adapter for now – pure JWT sessions
+  session: {
+    strategy: "jwt",
+  },
+
   providers: [
-    // 🚨 Use your existing Credentials provider (or other providers) from authOptions.ts:
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.adminUser.findUnique({
-          where: { email: credentials.email },
-        });
-        if (!user) return null;
-        const isValid = await import("bcrypt").then(({ default: bcrypt }) =>
-          bcrypt.compare(credentials.password, user.passwordHash)
-        );
-        if (!isValid) return null;
-        return { id: user.id, name: user.name ?? user.email, email: user.email, role: (user as any).role ?? "admin" };
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+
+        if (!adminEmail || !adminPassword) {
+          console.warn(
+            "ADMIN_EMAIL / ADMIN_PASSWORD are not set – denying all credentials logins."
+          );
+          return null;
+        }
+
+        // Simple "bootstrap" admin auth – replace with real DB-backed auth later.
+        if (
+          credentials.email === adminEmail &&
+          credentials.password === adminPassword
+        ) {
+          return {
+            id: "admin",
+            name: "Admin",
+            email: credentials.email,
+            role: "admin",
+          } as any;
+        }
+
+        // You can expand here later:
+        // - Look up operator / regulator / analyst accounts in the DB
+        // - Check hashed passwords, etc.
+        return null;
       },
     }),
-    // ... (Add Google, etc., if previously used)
+    // If you had OAuth providers (Google, etc.) before, re-add them here.
   ],
-  adapter: PrismaAdapter(prisma),  // if you were using PrismaAdapter
+
   callbacks: {
     async jwt({ token, user }) {
+      // On first login, persist id/role from the user into the token
       if (user) {
-        token.id = user.id;
-        token.role = (user as any).role ?? "admin";
+        token.id = (user as any).id ?? token.id ?? "anonymous";
+        token.role = (user as any).role ?? token.role ?? "admin";
       }
       return token;
     },
+
     async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.id as string;
-        session.user.role = (token as any).role ?? "admin";
+      if (session.user) {
+        (session.user as any).id = (token as any).id ?? "anonymous";
+        (session.user as any).role = (token as any).role ?? "consumer";
       }
       return session;
     },
   },
+
+  // Use the built‑in NextAuth sign‑in page at /api/auth/signin
+  pages: {},
 };
 
-/** Ensure there is a logged-in user (any role). Redirects to sign-in if not. */
-export async function requireUser() {
+/**
+ * Require that a user is signed in.
+ * Redirects to the NextAuth sign-in with a callbackUrl back to home.
+ */
+export async function requireUser(): Promise<Session> {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/api/auth/signin?callbackUrl=/");
@@ -68,13 +109,21 @@ export async function requireUser() {
   return session;
 }
 
-/** Ensure the user has one of the required roles. Redirects away if not authorized. */
-export async function requireRole(roles: Session["user"]["role"] | Session["user"]["role"][]) {
+/**
+ * Require that the user has one of the allowed roles.
+ * Redirects home if unauthorized.
+ */
+export async function requireRole(
+  roles: Session["user"]["role"] | Session["user"]["role"][]
+): Promise<Session> {
   const allowed = Array.isArray(roles) ? roles : [roles];
   const session = await requireUser();
-  const userRole = (session.user as any).role;
-  if (!allowed.includes(userRole)) {
-    redirect("/");  // not authorized
+
+  const role = (session.user as any).role as Session["user"]["role"];
+  if (!allowed.includes(role)) {
+    // Could be /forbidden later; for now, bounce home.
+    redirect("/");
   }
+
   return session;
 }

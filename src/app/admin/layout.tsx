@@ -1,12 +1,13 @@
 // src/app/admin/layout.tsx
-import { requireRole } from "@/lib/auth";
 import type { ReactNode } from "react";
-import AdminShell from "./shell";  // client shell for layout
+import { requireRole } from "@/lib/auth";
+import AdminShell from "./shell";
 
-export const metadata = { title: "Admin · SmokeTheGlobe" };
+export const metadata = {
+  title: "Admin · Smoke The Globe",
+};
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  // Ensure user is admin (server-side check)
+export default async function AdminLayout({ children }: { children: ReactNode }) {
   await requireRole("admin");
   return <AdminShell>{children}</AdminShell>;
 }
