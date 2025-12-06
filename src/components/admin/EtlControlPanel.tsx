@@ -14,10 +14,10 @@ import {
   runCaDccFull,
   runWaLcbDryRun,
   runWaLcbFull,
-  runMaCccDryRun,
-  runMaCccFull,
   runCoaIngestFromUploadsDryRun,
   runCoaIngestFromUploadsFull,
+  runCannlyticsCoasDryRun,
+  runCannlyticsCoasFull,
 } from "@/app/admin/etl/actions";
 
 type Runner = () => Promise<EtlRunResult>;
@@ -43,6 +43,25 @@ const cards: EtlCardConfig[] = [
     primaryRunner: runCannlyticsDryRun,
     secondaryRunner: runCannlyticsFull,
   },
+{
+  id: "cannlytics-coas",
+  title: "Global COAs – Cannlytics",
+  description: "Canonical COA metadata from Cannlytics (multi-state lab results).",
+  primaryLabel: "Dry Run",
+  secondaryLabel: "Full Sync",
+  primaryRunner: runCannlyticsCoasDryRun,
+  secondaryRunner: runCannlyticsCoasFull,
+},
+{
+  id: "coa-from-uploads",
+  title: "COAs from uploads (canonical)",
+  description: "Parse & ingest COAs from the UploadedDocument table.",
+  primaryLabel: "Dry Run",
+  secondaryLabel: "Full Run",
+  primaryRunner: runCoaIngestFromUploadsDryRun,
+  secondaryRunner: runCoaIngestFromUploadsFull,
+},
+
   {
     id: "ny-ocm",
     title: "New York OCM – Canonical",

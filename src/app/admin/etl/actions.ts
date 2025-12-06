@@ -3,7 +3,12 @@
 
 import { runCannlyticsLicensesEtl } from "@/lib/etl/cannlyticsLicenses";
 import { runNyOcmLicensesEtl } from "@/lib/etl/nyOcmLicenses";
-import { ingestCoasFromUploadedDocs } from "@/lib/etl/coaFromUploaded";
+import { runMeOcpLicensesEtl } from "@/lib/etl/meOcpLicenses";
+import { runCaDccLicensesEtl } from "@/lib/etl/caDccLicenses";
+import { runMaCccLicensesEtl } from "@/lib/etl/maCccLicenses";
+import { runWaLcbLicensesEtl } from "@/lib/etl/waLcbLicenses";
+import { ingestCoasFromUploadedDocs } from "@/lib/etl/coaFromUpload";
+import { runCannlyticsCoasEtl } from "@/lib/etl/coaFromCannlytics";
 
 // A common shape for ETL results we surface in the UI
 export interface EtlRunResult {
@@ -17,6 +22,27 @@ export interface EtlRunResult {
 }
 
 // Cannlytics – All States
+export async function runCannlyticsCoasDryRun(): Promise<EtlRunResult> {
+  "use server";
+
+  const result = await runCannlyticsCoasEtl({
+    dryRun: true,
+    limit: 2_000,
+  });
+
+  return mapEtlResult(result, "Cannlytics COAs – Dry Run");
+}
+
+export async function runCannlyticsCoasFull(): Promise<EtlRunResult> {
+  "use server";
+
+  const result = await runCannlyticsCoasEtl({
+    dryRun: false,
+    limit: 50_000,
+  });
+
+  return mapEtlResult(result, "Cannlytics COAs – Full Sync");
+}
 export async function runCannlyticsDryRun(): Promise<EtlRunResult> {
   const result = await runCannlyticsLicensesEtl({
     dryRun: true,
