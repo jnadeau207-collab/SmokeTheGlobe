@@ -1,23 +1,45 @@
-﻿
+﻿version: "3.9"
+
 services:
   db:
     image: postgres:15
     restart: always
     environment:
+      POSTGRES_DB: smoketheglobe
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: smoketheglobe
+    ports:
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
 
   adminer:
     image: adminer
     restart: always
+    depends_on:
+      - db
     ports:
-      - '8080:8080'
+      - "8080:8080"
+
+  # Optional ETL service (Python-based cannabis_suite ETL)
+  # This will run independently of the Next.js web app.
+  etl:
+    build:
+      context: .
+      dockerfile: Dockerfile.etl
+    # Compose will substitute values from your .env file
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      ETL_ENABLE_CA: ${ETL_ENABLE_CA:-0}
+      ETL_ENABLE_WA: ${ETL_ENABLE_WA:-0}
+      ETL_ENABLE_ON: ${ETL_ENABLE_ON:-0}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    depends_on:
+      - db
+    # No ports exposed; it just talks to the DB in the background
+    restart: "no"
 
 volumes:
   db_data:
-

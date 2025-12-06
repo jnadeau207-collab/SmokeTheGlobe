@@ -112,6 +112,11 @@ model StateLicense {
   licenseType   String // retailer, cultivator, lab, etc.
   status        String // active, suspended, revoked, etc.
   entityName    String
+  countryCode   String   @default("US") // ISO-2 or ISO-3 country code
+  regionCode    String?               // state / province / region code
+  city          String?
+  latitude      Float?
+  longitude     Float?
 
   issuedAt  DateTime?
   expiresAt DateTime?
@@ -126,6 +131,7 @@ model StateLicense {
 
   locations Location[]
   labs      Lab[]
+  transparencyScore Float? @map("transparency_score")
 }
 
 // ---------- Labs & Lab Results ----------
@@ -152,6 +158,31 @@ model Lab {
 
   labResults LabResult[]
 }
+
+model CoaDocument {
+  id            String   @id @default(cuid())
+  title         String
+  labName       String?
+  batchRef      String?   // e.g. batch ID or human-readable batch code
+  licenseRef    String?   // e.g. license number or entity name
+
+  // Where did this document come from?
+  sourceType    String    @default("manual") // "manual" | "etl-scraper" | "operator-upload"
+
+  // File metadata (if a PDF/image/etc. was uploaded)
+  fileType      String?   // "pdf" | "image" | "text" | "html" | ...
+  storageKey    String?   // object storage key, e.g. "coas/ca/on/1234.pdf"
+
+  // Content + parsing
+  rawText       String?   // full COA text (can be null until parsed)
+  parsedSummary Json?     // structured data after parsing
+
+  status        String    @default("pending") // "pending" | "parsed" | "failed"
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 
 // ---------- Batches & Verification ----------
 

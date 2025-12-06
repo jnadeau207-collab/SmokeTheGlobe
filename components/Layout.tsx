@@ -1,5 +1,5 @@
-﻿import Link from "next/link";
-import { ReactNode } from "react";
+﻿import Link from 'next/link';
+import { ReactNode } from 'react';
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -13,7 +13,9 @@ export default function Layout({ children }: { children: ReactNode }) {
             </div>
             <div>
               <div className="font-semibold tracking-wide text-xs text-emerald-900">Project</div>
-              <div className="text-xs text-emerald-300">Cannabis Retail Transparency</div>
+              <div className="text-xs text-emerald-300">
+                Cannabis Retail Transparency
+              </div>
             </div>
           </Link>
 
@@ -21,10 +23,8 @@ export default function Layout({ children }: { children: ReactNode }) {
             <Link href="/" className="text-slate-400 hover:text-emerald-400">
               Explore
             </Link>
-
-            {/* This link now goes directly to the custom sign-in page with a callback */}
             <Link
-              href="/auth/signin?callbackUrl=/admin"
+              href="/admin"
               className="rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-emerald-900 hover:border-emerald-500 hover:text-emerald-400"
             >
               log in
@@ -42,9 +42,12 @@ export default function Layout({ children }: { children: ReactNode }) {
       <footer className="border-t border-slate-800 bg-slate-950/90 text-xs text-slate-500">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <span>Â© {new Date().getFullYear()} SmokeTheGlobe</span>
-          <span className="text-slate-600">Independent data on legal cannabis retailers & batches.</span>
+          <span className="text-slate-600">
+            Independent data on legal cannabis retailers & batches.
+          </span>
         </div>
       </footer>
     </div>
   );
 }
+
