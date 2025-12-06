@@ -24,6 +24,7 @@ from typing import List
 
 from .db_client import SupabaseRepository
 from .models import LLMParseError, LicenseEntity
+from etl.jobs.sync_us_licenses import run_us_license_etl
 from .parser import parse_with_llm
 from .scraper_agent import LicenseScraper
 

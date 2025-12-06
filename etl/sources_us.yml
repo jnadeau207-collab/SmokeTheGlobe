@@ -1,0 +1,40 @@
+# etl/sources_us.yml
+# Template config for US license ETL.
+# IMPORTANT: Set enabled: true only for sources whose Terms of Use
+# and robots.txt explicitly allow automated access and reuse.
+
+- id: us-ca-licenses
+  enabled: false
+  jurisdiction: "US-CA"
+  kind: "license"
+  source_type: "open_data_api"    # e.g. socrata, etc.
+  endpoint: "https://EXAMPLE-CHANGE-ME.ca.gov/resource/licenses.json"
+  primary_key: "license_number"
+  field_mapping:
+    state_code: "state"
+    license_number: "license_number"
+    license_type: "license_type"
+    status: "license_status"
+    entity_name: "business_name"
+    city: "city"
+    issued_at: "issue_date"
+    expires_at: "expiration_date"
+    source_system: "CA_DCC"
+
+- id: us-ma-licenses
+  enabled: false
+  jurisdiction: "US-MA"
+  kind: "license"
+  source_type: "open_data_api"
+  endpoint: "https://EXAMPLE-CHANGE-ME.mass.gov/resource/licenses.json"
+  primary_key: "license_number"
+  field_mapping:
+    state_code: "state"
+    license_number: "license_number"
+    license_type: "license_type"
+    status: "license_status"
+    entity_name: "business_name"
+    city: "city"
+    issued_at: "issue_date"
+    expires_at: "expiration_date"
+    source_system: "MA_CCC"

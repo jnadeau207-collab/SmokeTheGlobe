@@ -1,111 +1,162 @@
-# etl/db_client.py
+# etl/db_client_pg.py
 """
-Supabase database client and helpers for upsert + failed-parse logging.
+Postgres database client for ETL.
 
-Uses supabase-py and environment variables:
-  - SUPABASE_URL
-  - SUPABASE_SERVICE_ROLE_KEY   (server key, NOT the anon key)
+Replaces the old Supabase-focused db_client with direct writes into
+the SmokeTheGlobe Postgres schema used by Prisma.
+
+Uses:
+  - DATABASE_URL   (same as your Next.js app)
+
+IMPORTANT: This module is designed to respect legal & compliance
+constraints. You are responsible for ensuring that any ETL job that
+calls into it only uses data sources you are allowed to ingest.
 """
 
 from __future__ import annotations
 
 import logging
 import os
+from dataclasses import dataclass
 from typing import Iterable, Optional
 
-from supabase import Client, create_client  # type: ignore
-
-from .models import LicenseEntity, LLMParseError
+import psycopg2
+from psycopg2.extras import execute_batch
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
-def _create_supabase_client() -> Client:
-    url = os.getenv("SUPABASE_URL")
-    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    if not url or not key:
-        raise RuntimeError(
-            "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in the environment."
-        )
-    return create_client(url, key)
+@dataclass
+class LicenseRecord:
+  state_code: str
+  license_number: str
+  license_type: str
+  status: str
+  entity_name: str
+  country_code: str = "US"
+  region_code: Optional[str] = None
+  city: Optional[str] = None
+  latitude: Optional[float] = None
+  longitude: Optional[float] = None
+  issued_at: Optional[str] = None  # ISO strings; DB will cast
+  expires_at: Optional[str] = None
+  source_url: Optional[str] = None
+  source_system: Optional[str] = None
+  raw_data: Optional[dict] = None
 
 
-class SupabaseRepository:
+class PgRepo:
+  """
+  Thin Postgres client that knows how to upsert into Prisma tables.
+
+  It assumes the Prisma migrations defined these tables:
+
+    - "StateLicense"
+    - (later) "Batch", "CoaDocument", "LabResult", etc.
+  """
+
+  def __init__(self, conn_str: Optional[str] = None) -> None:
+    self.conn_str = conn_str or os.environ.get("DATABASE_URL")
+    if not self.conn_str:
+      raise RuntimeError("DATABASE_URL env var is required for ETL PgRepo")
+
+  def _conn(self):
+    return psycopg2.connect(self.conn_str)
+
+  # -----------------------
+  # License upsert
+  # -----------------------
+
+  def upsert_state_licenses(self, records: Iterable[LicenseRecord]) -> int:
     """
-    Thin wrapper around supabase-py for license upserts and error logging.
+    Upsert a batch of StateLicense rows.
+
+    Unique key: (stateCode, licenseNumber)
+
+    WARNING: This function assumes the Prisma migration has created
+    columns:
+      - stateCode, licenseNumber, licenseType, status, entityName
+      - countryCode, regionCode, city, latitude, longitude
+      - issuedAt, expiresAt, sourceUrl, sourceSystem, rawData
     """
+    items = list(records)
+    if not items:
+      return 0
 
-    def __init__(self, client: Optional[Client] = None) -> None:
-        self.client: Client = client or _create_supabase_client()
-
-    # -----------------------
-    # License upsert
-    # -----------------------
-
-    def upsert_licenses(self, items: Iterable[LicenseEntity]) -> None:
+    with self._conn() as conn, conn.cursor() as cur:
+      execute_batch(
+        cur,
         """
-        Upsert a batch of LicenseEntity objects into the `licenses` table.
-
-        The natural uniqueness constraint is (license_number, issuer),
-        so the DB should have a UNIQUE index on that pair. We use
-        on_conflict="license_number,issuer" accordingly.
-        """
-        payload = [item.to_db_dict() for item in items]
-        if not payload:
-            return
-
-        logger.info("Upserting %d licenses", len(payload))
-
-        response = (
-            self.client.table("StateLicense")
-            .upsert(payload, on_conflict="license_number,issuer")
-True    .execute()
+        INSERT INTO "StateLicense" (
+          "stateCode",
+          "licenseNumber",
+          "licenseType",
+          "status",
+          "entityName",
+          "countryCode",
+          "regionCode",
+          "city",
+          "latitude",
+          "longitude",
+          "issuedAt",
+          "expiresAt",
+          "sourceUrl",
+          "sourceSystem",
+          "rawData"
         )
-        if getattr(response, "error", None):
-            raise RuntimeError(f"Supabase upsert error: {response.error}")
+        VALUES (
+          %(state_code)s,
+          %(license_number)s,
+          %(license_type)s,
+          %(status)s,
+          %(entity_name)s,
+          %(country_code)s,
+          %(region_code)s,
+          %(city)s,
+          %(latitude)s,
+          %(longitude)s,
+          %(issued_at)s,
+          %(expires_at)s,
+          %(source_url)s,
+          %(source_system)s,
+          %(raw_data)s
+        )
+        ON CONFLICT ("stateCode", "licenseNumber") DO UPDATE SET
+          "licenseType"   = EXCLUDED."licenseType",
+          "status"        = EXCLUDED."status",
+          "entityName"    = EXCLUDED."entityName",
+          "countryCode"   = EXCLUDED."countryCode",
+          "regionCode"    = EXCLUDED."regionCode",
+          "city"          = EXCLUDED."city",
+          "latitude"      = EXCLUDED."latitude",
+          "longitude"     = EXCLUDED."longitude",
+          "issuedAt"      = EXCLUDED."issuedAt",
+          "expiresAt"     = EXCLUDED."expiresAt",
+          "sourceUrl"     = EXCLUDED."sourceUrl",
+          "sourceSystem"  = EXCLUDED."sourceSystem",
+          "rawData"       = EXCLUDED."rawData";
+        """,
+        [
+          {
+            "state_code": r.state_code,
+            "license_number": r.license_number,
+            "license_type": r.license_type,
+            "status": r.status,
+            "entity_name": r.entity_name,
+            "country_code": r.country_code,
+            "region_code": r.region_code,
+            "city": r.city,
+            "latitude": r.latitude,
+            "longitude": r.longitude,
+            "issued_at": r.issued_at,
+            "expires_at": r.expires_at,
+            "source_url": r.source_url,
+            "source_system": r.source_system,
+            "raw_data": r.raw_data,
+          }
+          for r in items
+        ],
+      )
 
-    # -----------------------
-    # Failed parse logging
-    # -----------------------
-
-    def log_failed_parse(
-        self,
-        *,
-        source: str,
-        url: str,
-        markdown: str,
-        error: LLMParseError,
-    ) -> None:
-        """
-        Persist a failed parse so we can re-process it later.
-
-        Requires an `etl_failed_parses` table (create via migration) with fields:
-          - id (uuid, default gen_random_uuid())
-          - source (text)
-          - url (text)
-          - markdown (text)
-          - error_message (text)
-          - error_details (jsonb)
-          - created_at (timestamp with time zone default now())
-        """
-        logger.warning("Logging failed parse for %s: %s", url, error)
-
-        payload = {
-            "source": source,
-            "url": url,
-            "markdown": markdown,
-            "error_message": str(error),
-            "error_details": error.as_dict(),
-        }
-
-        try:
-            resp = (
-                self.client.table("etl_failed_parses")
-                .upsert(payload)
-True    .execute()
-            )
-            if getattr(resp, "error", None):
-                logger.error("Failed to log parse error to DB: %s", resp.error)
-        except Exception as exc:  # In worst case, just log locally.
-            logger.exception("Failed to log parse error to DB: %s", exc)
+    logger.info("Upserted %d state licenses", len(items))
+    return len(items)

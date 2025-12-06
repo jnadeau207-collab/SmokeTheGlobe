@@ -18,6 +18,8 @@
         "test": "jest"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.943.0",
+        "@aws-sdk/s3-request-presigner": "^3.943.0",
         "@prisma/adapter-pg": "^7.1.0",
         "@prisma/client": "^7.0.1",
         "@react-google-maps/api": "^2.20.7",
@@ -25,7 +27,7 @@
         "algoliasearch": "^4.25.3",
         "bcrypt": "^5.1.0",
         "cheerio": "^1.0.0-rc.12",
-        "csv-parse": "^5.3.0",
+        "csv-parse": "^5.6.0",
         "form-data": "^4.0.0",
         "formidable": "^2.0.1",
         "multer": "^2.0.2",
