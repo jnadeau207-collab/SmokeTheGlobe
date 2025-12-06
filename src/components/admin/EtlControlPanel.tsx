@@ -10,6 +10,8 @@ import {
   runNyOcmFull,
   runMeOcpDryRun,
   runMeOcpFull,
+  runMaCccDryRun,
+  runMaCccFull,
   runCaDccDryRun,
   runCaDccFull,
   runWaLcbDryRun,
