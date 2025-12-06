@@ -20,12 +20,12 @@ const REGULATOR_ITEMS: NavItem[] = [
   {
     href: "/regulator/licenses",
     label: "Licenses",
-    helper: "Licensed entities in scope",
+    helper: "Licensed entities",
   },
   {
     href: "/regulator/coas",
     label: "COAs & recalls",
-    helper: "Testing & safety signals",
+    helper: "Testing & safety",
   },
   {
     href: "/regulator/analytics",
@@ -43,15 +43,11 @@ function isActive(pathname: string, href: string) {
 
 export default function RegulatorSidebar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState<boolean>(true);
-
-  const defaultOpen =
-    pathname.startsWith("/regulator") || pathname.startsWith("/regulator/");
-  const isOpen = open ?? defaultOpen;
+  const [open, setOpen] = useState(true);
 
   return (
-    <aside className="sticky top-24 hidden h-[calc(100vh-7rem)] rounded-2xl border border-slate-800 bg-slate-950/90 p-4 text-[13px] text-slate-200 shadow-[0_0_40px_rgba(56,189,248,0.18)] lg:flex lg:w-60 lg:flex-col lg:overflow-y-auto">
-      <div className="mb-3">
+    <aside className="flex h-full flex-col border-r border-slate-800 bg-slate-950/95 px-4 py-5 text-[13px] text-slate-200">
+      <div className="mb-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-sky-300/80">
           Regulator console
         </p>
@@ -67,12 +63,10 @@ export default function RegulatorSidebar() {
         className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 px-3 py-2 text-left text-[12px] hover:border-sky-400/60 hover:text-sky-100"
       >
         <span className="font-semibold">Regulator navigation</span>
-        <span className="text-[10px] text-slate-500">
-          {isOpen ? "▾" : "▸"}
-        </span>
+        <span className="text-[10px] text-slate-500">{open ? "▾" : "▸"}</span>
       </button>
 
-      {isOpen && (
+      {open && (
         <nav className="mt-3 space-y-1">
           {REGULATOR_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);
@@ -108,8 +102,8 @@ export default function RegulatorSidebar() {
         <p className="font-semibold text-slate-300">Jurisdiction scope</p>
         <p className="mt-1">
           In the next phase we’ll wire this console to jurisdiction codes so
-          regulators only see data in their region, while admins retain
-          global access.
+          regulators only see data in their region, while admins retain global
+          access.
         </p>
       </div>
     </aside>

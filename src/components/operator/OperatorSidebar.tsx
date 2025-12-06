@@ -48,16 +48,11 @@ function isActive(pathname: string, href: string) {
 
 export default function OperatorSidebar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState<boolean>(true);
-
-  const defaultOpen =
-    pathname.startsWith("/operator") || pathname.startsWith("/operator/");
-  const isOpen = open ?? defaultOpen;
+  const [open, setOpen] = useState(true);
 
   return (
-    <aside className="sticky top-24 hidden h-[calc(100vh-7rem)] rounded-2xl border border-slate-800 bg-slate-950/90 p-4 text-[13px] text-slate-200 shadow-[0_0_40px_rgba(16,185,129,0.18)] lg:flex lg:w-60 lg:flex-col lg:overflow-y-auto">
-      {/* Header */}
-      <div className="mb-3">
+    <aside className="flex h-full flex-col border-r border-slate-800 bg-slate-950/95 px-4 py-5 text-[13px] text-slate-200">
+      <div className="mb-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-emerald-300/80">
           Operator suite
         </p>
@@ -67,19 +62,16 @@ export default function OperatorSidebar() {
         </p>
       </div>
 
-      {/* Collapsible block */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950/80 px-3 py-2 text-left text-[12px] hover:border-emerald-400/60 hover:text-emerald-100"
       >
         <span className="font-semibold">Operator navigation</span>
-        <span className="text-[10px] text-slate-500">
-          {isOpen ? "▾" : "▸"}
-        </span>
+        <span className="text-[10px] text-slate-500">{open ? "▾" : "▸"}</span>
       </button>
 
-      {isOpen && (
+      {open && (
         <nav className="mt-3 space-y-1">
           {OPERATOR_ITEMS.map((item) => {
             const active = isActive(pathname, item.href);

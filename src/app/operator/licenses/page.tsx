@@ -1,8 +1,8 @@
 // src/app/operator/licenses/page.tsx
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -11,42 +11,55 @@ export const metadata = {
 
 export const dynamic = "force-dynamic";
 
-// Server action to create a license manually (no ETL required).
+// Server action: create a license manually (admin only).
 async function createLicense(formData: FormData) {
   "use server";
 
-  // Admin + operator roles are allowed to create licenses.
-  await requireRole(["admin", "operator", "producer", "retailer"], "/operator");
+  // Only admins can create licenses; operators can only view.
+  await requireRole("admin", "/operator/licenses");
 
   const entityName = formData.get("entityName")?.toString().trim();
   const licenseNumber = formData.get("licenseNumber")?.toString().trim();
+  const stateCode = formData.get("stateCode")?.toString().trim().toUpperCase();
+  const licenseType = formData.get("licenseType")?.toString().trim();
+  const status = formData.get("status")?.toString().trim();
 
-  if (!entityName || !licenseNumber) {
-    // In the future we can surface validation errors, but for now just no-op.
+  if (!entityName || !licenseNumber || !stateCode || !licenseType || !status) {
+    console.warn("[operator/licenses] Missing required fields for license create");
     return;
   }
 
-  await prisma.stateLicense.create({
-    data: {
-      entityName,
-      licenseNumber,
-      // Any fields with defaults (e.g. countryCode) will be auto-filled by Prisma.
-    },
-  });
+  try {
+    await prisma.stateLicense.create({
+      data: {
+        entityName,
+        licenseNumber,
+        stateCode,
+        licenseType,
+        status,
+        // countryCode defaults to "US" in schema; regionCode can be derived later.
+      },
+    });
+  } catch (err) {
+    console.error("[operator/licenses] Failed to create license", err);
+    throw err;
+  }
 
-  // Refresh the licenses list and return to this page.
   revalidatePath("/operator/licenses");
   redirect("/operator/licenses");
 }
 
 export default async function OperatorLicensesPage() {
   const licenses = await prisma.stateLicense.findMany({
-    orderBy: { entityName: "asc" },
+    orderBy: [{ stateCode: "asc" }, { entityName: "asc" }],
     take: 100,
     select: {
       id: true,
       licenseNumber: true,
       entityName: true,
+      stateCode: true,
+      licenseType: true,
+      status: true,
     },
   });
 
@@ -64,8 +77,12 @@ export default async function OperatorLicensesPage() {
             <h1 className="text-lg font-semibold">Your licenses</h1>
             <p className="mt-1 text-[12px] text-slate-400">
               Select a license to open its full seed-to-sale workspace: rooms,
-              plants, batches, packages, inventory, and COAs. You can also
-              inject licenses manually here – no state data or ETL required.
+              plants, batches, packages, inventory, and COAs.
+            </p>
+            <p className="mt-1 text-[11px] text-slate-500">
+              Licenses can be ingested automatically from public datasets or
+              created manually by an admin for any paying customer, even if they
+              are not yet present in state registries.
             </p>
           </div>
           <Link
@@ -76,24 +93,24 @@ export default async function OperatorLicensesPage() {
           </Link>
         </header>
 
-        {/* Quick create license panel */}
+        {/* Admin-only create license panel */}
         <section className="mt-2 rounded-2xl border border-emerald-500/40 bg-slate-950/90 p-4 text-[12px] text-slate-300 shadow-[0_0_30px_rgba(16,185,129,0.25)]">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-300/80">
-                Create a license
+                Inject a license (admin-only)
               </p>
               <p className="mt-1 text-[11px] text-slate-400">
-                Admins and operators can inject licenses manually so the full
-                seed-to-sale suite is available even before any state or ETL
-                data is hooked up.
+                Admins can create licenses manually so the full seed-to-sale
+                suite is available to any paying customer. This does not depend
+                on state or ETL data.
               </p>
             </div>
           </div>
 
           <form
             action={createLicense}
-            className="mt-3 grid gap-3 text-[12px] sm:grid-cols-[1.5fr,1fr,auto]"
+            className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1.4fr,1fr,0.6fr,1fr,1fr,auto]"
           >
             <div className="space-y-1">
               <label className="block text-[11px] font-medium uppercase tracking-wide text-slate-400">
@@ -106,6 +123,7 @@ export default async function OperatorLicensesPage() {
                 className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 text-[12px] text-slate-50 outline-none ring-emerald-500/30 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
               />
             </div>
+
             <div className="space-y-1">
               <label className="block text-[11px] font-medium uppercase tracking-wide text-slate-400">
                 License number
@@ -117,6 +135,57 @@ export default async function OperatorLicensesPage() {
                 className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 text-[12px] text-slate-50 outline-none ring-emerald-500/30 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
               />
             </div>
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                State / region code
+              </label>
+              <input
+                name="stateCode"
+                required
+                placeholder="e.g. CO, CA, ON"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 text-[12px] text-slate-50 outline-none ring-emerald-500/30 placeholder:text-slate-500 focus:border-emerald-400 focus:ring-2"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                License type
+              </label>
+              <select
+                name="licenseType"
+                required
+                defaultValue="Retailer"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 text-[12px] text-slate-50 outline-none ring-emerald-500/30 focus:border-emerald-400 focus:ring-2"
+              >
+                <option value="Retailer">Retailer</option>
+                <option value="Cultivator">Cultivator</option>
+                <option value="Manufacturer">Manufacturer</option>
+                <option value="Processor">Processor</option>
+                <option value="Lab">Lab</option>
+                <option value="Distributor">Distributor</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Status
+              </label>
+              <select
+                name="status"
+                required
+                defaultValue="Active"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-3 py-2 text-[12px] text-slate-50 outline-none ring-emerald-500/30 focus:border-emerald-400 focus:ring-2"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Revoked">Revoked</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </div>
+
             <div className="flex items-end">
               <button
                 type="submit"
@@ -144,7 +213,7 @@ export default async function OperatorLicensesPage() {
                 className="group rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/80 via-slate-950 to-slate-950 p-4 transition hover:-translate-y-0.5 hover:border-emerald-400/70 hover:shadow-[0_0_30px_rgba(16,185,129,0.4)]"
               >
                 <p className="text-[11px] uppercase tracking-wide text-slate-400">
-                  License
+                  License · {lic.stateCode || "NA"}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-slate-50">
                   {lic.entityName}
@@ -154,6 +223,12 @@ export default async function OperatorLicensesPage() {
                   <code className="rounded bg-slate-900/80 px-1.5 py-0.5 text-[11px] text-slate-200">
                     {lic.licenseNumber}
                   </code>
+                </p>
+                <p className="mt-1 text-[11px] text-slate-400">
+                  Type: {lic.licenseType || "Unknown"} · Status:{" "}
+                  <span className="text-emerald-200">
+                    {lic.status || "Unknown"}
+                  </span>
                 </p>
                 <p className="mt-2 text-[11px] text-emerald-200/80">
                   Open seed-to-sale suite →
