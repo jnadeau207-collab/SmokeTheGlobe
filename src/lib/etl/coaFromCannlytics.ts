@@ -25,8 +25,10 @@ type RawRow = Record<string, string>;
 
 const DEFAULT_COAS_URL =
   process.env.ETL_CANNABIS_COAS_URL ??
-  // Cannlytics COA metadata API, CSV format, high row limit
-  "https://cannlytics.com/api/data/coas?format=csv&limit=200000";
+  // Public Cannlytics cannabis_results snapshot (multi‑state COA metadata).
+  // Single CSV: data/md/md-results-latest.csv
+  // See: Hugging Face dataset "cannlytics/cannabis_results".
+  "https://huggingface.co/datasets/cannlytics/cannabis_results/resolve/main/data/md/md-results-latest.csv";
 
 const US_STATE_CODES = new Set([
   "AK","AL","AR","AZ","CA","CO","CT","DC","DE","FL",
@@ -196,24 +198,16 @@ export async function runCannlyticsCoasEtl(
       title,
       labName,
       batchRef,
-      sampleId,
       licenseRef,
-      productName,
-      productType: row["product_type"] ?? null,
-      cultivarName: row["strain"] ?? null,
-      brandName,
-      jurisdiction: state,
+      // Treat this as a URL-backed COA; we'll keep the actual URLs inside parsedSummary
+      // for now instead of overloading storageKey.
       fileType: coaUrl ? "url" : null,
-      fileUrl: coaUrl,
       sourceType: "etl-cannlytics-coas",
-      sourceUrl,
       status: "parsed",
       rawText: JSON.stringify(row),
       parsedSummary: row as unknown as Record<string, unknown>,
-      // Keep a bit of extra structured context
-      sampleCollectedAt,
-      sampleTestedAt,
     };
+
 
     if (existing) {
       await prisma.coaDocument.update({

@@ -9,6 +9,7 @@ import { runMaCccLicensesEtl } from "@/lib/etl/maCccLicenses";
 import { runWaLcbLicensesEtl } from "@/lib/etl/waLcbLicenses";
 import { ingestCoasFromUploadedDocs } from "@/lib/etl/coaFromUpload";
 import { runCannlyticsCoasEtl } from "@/lib/etl/coaFromCannlytics";
+import type { CoaEtlRunResult } from "@/lib/etl/coaFromCannlytics";
 
 // A common shape for ETL results we surface in the UI
 export interface EtlRunResult {
@@ -19,6 +20,35 @@ export interface EtlRunResult {
   upserts: number;
   skipped: number;
   notes: string[];
+}
+
+function mapEtlResult(result: CoaEtlRunResult, label: string): EtlRunResult {
+  const summaryNotes: string[] = [];
+
+  summaryNotes.push(
+    `Fetched ${result.totalFetched} rows, filtered to ${result.totalFiltered}, processed ${result.totalProcessed}.`
+  );
+  summaryNotes.push(
+    `Upserts: ${result.totalUpserts}, skipped: ${result.totalSkipped}.`
+  );
+
+  if (result.states.length > 0) {
+    summaryNotes.push(`States seen: ${result.states.join(", ")}`);
+  }
+
+  if (result.notes && result.notes.length > 0) {
+    summaryNotes.push(...result.notes);
+  }
+
+  return {
+    label,
+    ok: true,
+    dryRun: result.dryRun,
+    processed: result.totalProcessed,
+    upserts: result.totalUpserts,
+    skipped: result.totalSkipped,
+    notes: summaryNotes,
+  };
 }
 
 // Cannlytics – All States

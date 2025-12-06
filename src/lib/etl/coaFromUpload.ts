@@ -36,12 +36,12 @@ export async function ingestCoasFromUploadedDocs(
   // - are verified (you can relax this later if needed)
   // - mimeType suggests COA
   // - do NOT already have a LabResult linked
-  const candidates = await prisma.uploadedDocument.findMany({
+    const candidates = await prisma.uploadedDocument.findMany({
     where: {
       verified: true,
       mimeType: { in: possibleMimeTypes },
-      labResults: {
-        none: {}, // no linked labResult yet
+      labResult: {
+        is: null, // no linked LabResult yet
       },
     },
     orderBy: { createdAt: "asc" },
