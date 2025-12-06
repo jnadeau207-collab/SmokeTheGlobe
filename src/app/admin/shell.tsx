@@ -28,8 +28,15 @@ const navSections = [
     ],
   },
   {
-    label: "Suites",
+    label: "ETL & Feeds",
     items: [
+      { href: "/admin/etl", label: "ETL Control Center" },
+    ],
+  },
+  {
+    label: "Suites & Navigation",
+    items: [
+      { href: "/", label: "Public Explorer" },
       { href: "/operator", label: "Operator Suite" },
       { href: "/regulator", label: "Regulator Console" },
       { href: "/analytics", label: "Analytics Lab" },
